@@ -33,7 +33,7 @@ class ObjectManager:
             #if params are correct, then this part will run
             self.currentObjects.append(Square(objectdata[0], objectdata[1], objectdata[2],objectdata[3],objectdata[4]))
 
-    def createWall(self, position: Vector3, width: float, height: float):
+    def createWall(self, position: Vector3, width: float, height: float, color = "red"):
         X = position.x
         Y = position.y
         Z = position.z
@@ -45,7 +45,7 @@ class ObjectManager:
             Vector3(X + halfWidth, Y + halfHeight, Z),
             Vector3(X - halfWidth, Y - halfHeight, Z),
             Vector3(X + halfWidth, Y - halfHeight, Z),
-            "red",
+            color,
         )
 
 

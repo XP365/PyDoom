@@ -20,6 +20,8 @@ testZ = 120
 )"""
 
 objectManager.createWall(Vector3(0, 0, testZ), 30,30)
+
+objectManager.createWall(Vector3(-30, 30, testZ), 30,30, "blue")
 while True:
     renderer.beginFrame()
     renderer.screen.fill("black")

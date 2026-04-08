@@ -66,6 +66,6 @@ class PlayerController:
             camera.rotateCamera(Vector3(0, 0, turn_speed_factor))
 
     def _move(self, direction, speed):
-        camera.moveCamera(Vector3(direction.x * speed, -direction.y * speed, direction.z * speed))
+        camera.moveCamera(Vector3(direction.x * speed, direction.y * speed, direction.z * speed))
 
 playerController = PlayerController()

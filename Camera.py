@@ -68,7 +68,7 @@ class Camera:
 
     def get_forward_vector(self):
         direction = self._rotation_matrix() @ np.array([0.0, 0.0, 1.0], dtype=np.float32)
-        return Vector3(float(direction[0]), float(direction[1]), float(direction[2]))
+        return Vector3(float(direction[0]), float(0), float(direction[2]))
 
     def get_right_vector(self):
         direction = self._rotation_matrix() @ np.array([1.0, 0.0, 0.0], dtype=np.float32)
