@@ -10,7 +10,7 @@ import InputManager
 
 inputManager = InputManager.inputManager
 
-WINDOW_SIZE = (800, 600)
+WINDOW_SIZE = (1920, 1080)
 WINDOW_TITLE = "PyDoom"
 FRAMERATE_CAP = 240
 BACKGROUND = (0.455, 0.204, 0.922, 1.0)
@@ -43,39 +43,24 @@ def load_texture(path: str) -> int:
     glBindTexture(GL_TEXTURE_2D, 0)
     return texture_id
 
-#TEMP
-vertex_shader_source = """
-#version 330 core
-layout (location = 0) in vec3 aPos;
-void main()
-{
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-}
-"""
-
-
 
 vertexes = [
-    (-0.5, -0.5, 0.0),
-    (0.5, -0.5, 0.0),
-    (0.0,  0.5, 0.0)
-]
-
-edges = [
-    (0, 1),
-    (1, 2),
-    (2, 0),
+    (-0.5, -0.5, 0.0), 
+    ( 0.5, -0.5, 0.0), 
+    ( 0.5,  0.5, 0.0), 
+    (-0.5,  0.5, 0.0),
 ]
 
 texcoords = [
     (0, 0),
     (1, 0),
-    (0.5, 1)
+    (1, 1),
+    (0, 1)
 ]
 
 def triangle(texture_id: int):
     glBindTexture(GL_TEXTURE_2D, texture_id)
-    glBegin(GL_TRIANGLES)
+    glBegin(GL_QUADS)
     for index, vertex in enumerate(vertexes):
         glTexCoord2f(texcoords[index][0], texcoords[index][1])
         glVertex3fv(vertex)
