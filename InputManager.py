@@ -11,13 +11,30 @@ moveSpeed = 5.0
 
 class InputManager:
     def __init__(self):
-        pygame.init()
-        # 1. Hide the mouse and lock it to the center of the window
+        self._center = None
+        self._relative_ok = False
+
+    def init(self, window_size: tuple[int, int]) -> None:
+        # Must be called after the window exists (after pygame.display.set_mode).
+        w, h = window_size
+        self._center = (w // 2, h // 2)
+
         pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
 
-    @staticmethod
-    def pollInput():
+        # Preferred: relative mouse mode keeps motion working without warping the cursor.
+        try:
+            self._relative_ok = bool(pygame.mouse.set_relative(True))
+        except Exception:
+            self._relative_ok = False
+
+        if not self._relative_ok:
+            pygame.mouse.set_pos(self._center)
+
+        # Flush any accumulated movement from initialization.
+        pygame.mouse.get_rel()
+
+    def pollInput(self):
         dt = time.getDeltaTime()
         keys = pygame.key.get_pressed()
 
@@ -64,6 +81,11 @@ class InputManager:
         if keys[pygame.K_d]:
             camera.x += right_x * moveSpeed * dt
             camera.z += right_z * moveSpeed * dt
+
+        # Fallback: keep the cursor centered if relative mode isn't available.
+        if (not self._relative_ok) and (self._center is not None):
+            pygame.mouse.set_pos(self._center)
+            pygame.mouse.get_rel()  # Flush any warp-induced delta.
 
 
 inputManager = InputManager()
