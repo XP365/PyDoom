@@ -1,30 +1,53 @@
-from Renderer import Renderer
-from Vectors import Vector3
-from PlayerControlls import playerController
-from Time import Time
-import ObjectManager as objM
-import Camera
+import os
 
-renderer = Renderer(1280,920)
-objectManager = objM.objectManager
-camera = Camera.camera
+import pygame
 
-testZ = 120
-"""objectManager.createObject(
-    objM.ObjectTypes.SQUARE,
-    Vector3(-30, -30, testZ),
-    Vector3(30, -30, testZ),
-    Vector3(-30, 30, testZ),
-    Vector3(30, 30, testZ),
-    "red",
-)"""
+from pygame.locals import *
 
-objectManager.createWall(Vector3(0, 0, testZ), 30,30)
+from InputManager import inputManager
+from ObjectManager import *
+from Time import time
+from Renderer import renderer, choose_video_driver, load_texture
 
-objectManager.createWall(Vector3(-30, 30, testZ), 30,30, "blue")
-while True:
-    renderer.beginFrame()
-    renderer.screen.fill("black")
-    playerController.pollInput()
-    renderer.drawAllObjects()
-    renderer.stepRenderer()
+
+def main() -> None:
+
+    #compatability fix
+    choose_video_driver()
+
+    #pygame setup
+    pygame.init()
+    pygame.display.set_caption(renderer.WINDOW_TITLE)
+    pygame.display.set_mode(renderer.WINDOW_SIZE, DOUBLEBUF | OPENGL)
+    # Sync renderer sizing/aspect ratio to the actual surface.
+    renderer.WINDOW_SIZE = pygame.display.get_surface().get_size()
+    inputManager.init(renderer.WINDOW_SIZE)
+
+    # OpenGL setup must happen after the OpenGL context exists (after set_mode).
+    renderer.initRenderer()
+
+    #msc setup
+    time.initTime(renderer.FRAMERATE_CAP)
+
+    Start()
+
+    while True:
+        renderer.stepRenderer()
+
+#Start of game logic behavior
+def Start():
+    texture_path = os.path.join("Assets", "Textures", "WallTemp.png")
+    texture_id = load_texture(texture_path)
+
+    texture_path = os.path.join("Assets", "Textures", "hud.png")
+    ui_tex = load_texture(texture_path)
+
+    create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
+
+    create_wall((0, 0, 0), (7, 5, 0), texture_id, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, 5), (5, 5, 10), texture_id)
+
+
+
+if __name__ == "__main__":
+    main()

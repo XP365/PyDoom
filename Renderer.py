@@ -1,65 +1,251 @@
+import os
+import sys
+from math import tan, radians, sqrt
+
 import pygame
-import numpy as np
-import ObjectManager
-import Camera
-from GameManager import gameManager
-from Time import Time
+from OpenGL.GL import *
+from pygame import QUIT
+
+from Camera import camera
+from InputManager import inputManager
+from Time import time
+from ObjectManager import objectManager, Wall
+
+
+def choose_video_driver() -> None:
+    if os.environ.get("SDL_VIDEODRIVER"):
+        return
+
+    if os.environ.get("DISPLAY"):
+        os.environ["SDL_VIDEODRIVER"] = "x11"
+        return
+
+    if os.environ.get("WAYLAND_DISPLAY"):
+        os.environ["SDL_VIDEODRIVER"] = "wayland"
+
+
+def load_texture(path: str) -> int:
+    surface = pygame.image.load(path).convert_alpha()
+
+    image_data = pygame.image.tostring(surface, "RGBA", False)
+    width, height = surface.get_size()
+
+    texture_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGBA,
+        width,
+        height,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        image_data,
+    )
+
+    glBindTexture(GL_TEXTURE_2D, 0)
+    return texture_id
+
+
+def draw_textured_quad(
+    texture_id: int,
+    topLeftPos: tuple = (-0.5, 0.5, 0.0),
+    bottomRightPos: tuple = (0.5, -0.5, 0.0),
+    *,
+    uv_mode: str = "tile",   # "stretch" or "tile"
+    tile_u: float = 5.0,     # repeats per world unit along U
+    tile_v: float = 5.0,     # repeats per world unit along V
+    u_offset: float = 0.0,
+    v_offset: float = 0.0,
+) -> None:
+    if texture_id is None:
+        raise RuntimeError(
+            "texture_id is None. Call renderer.initRenderer() after creating the OpenGL context "
+            "(pygame.display.set_mode(..., OPENGL)) before drawing."
+        )
+    # Assuming standard 2D quad (topLeft, topRight, bottomRight, bottomLeft)
+    # Using the provided positions to define the corners
+    x1, y1, z1 = topLeftPos
+    x2, y2, z2 = bottomRightPos
+
+    vertexes = [
+        (x1, y2, z1),  # Bottom Left (Using x from top, y from bottom for standard rect)
+        (x2, y2, z2),  # Bottom Right
+        (x2, y1, z2),  # Top Right
+        (x1, y1, z1),  # Top Left
+    ]
+
+    if uv_mode == "stretch":
+        texcoords = [
+            (0.0 + u_offset, 0.0 + v_offset),
+            (1.0 + u_offset, 0.0 + v_offset),
+            (1.0 + u_offset, 1.0 + v_offset),
+            (0.0 + u_offset, 1.0 + v_offset),
+        ]
+    else:
+        # Tile: compute repeats from world-space size.
+        # Use XZ distance for "width" so it works if Z changes; height comes from Y.
+        dx = x2 - x1
+        dz = z2 - z1
+        quad_width = sqrt(dx * dx + dz * dz) if (dx != 0 or dz != 0) else abs(x2 - x1)
+        quad_height = abs(y2 - y1)
+
+        repeat_u = quad_width * tile_u
+        repeat_v = quad_height * tile_v
+        texcoords = [
+            (0.0 + u_offset, 0.0 + v_offset),
+            (repeat_u + u_offset, 0.0 + v_offset),
+            (repeat_u + u_offset, repeat_v + v_offset),
+            (0.0 + u_offset, repeat_v + v_offset),
+        ]
+
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+    glBegin(GL_QUADS)
+
+    for index, vertex in enumerate(vertexes):
+        glTexCoord2f(texcoords[index][0], texcoords[index][1])
+        glVertex3fv(vertex)
+
+    glEnd()
+    glBindTexture(GL_TEXTURE_2D, 0)
+
+
+def set_perspective(fov_degrees: float, aspect_ratio: float, near: float, far: float) -> None:
+    top = near * tan(radians(fov_degrees) / 2)
+    bottom = -top
+    right = top * aspect_ratio
+    left = -right
+
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    glFrustum(left, right, bottom, top, near, far)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+
+
+def set_ortho_ndc() -> None:
+    # Simple UI projection: coordinates in [-1, 1] for both X and Y.
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    glOrtho(-1, 1, -1, 1, -1, 1)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
 
 
 class Renderer:
+    def __init__(self):
+        self.texture_id = None
+        self.WINDOW_SIZE = (1920, 1080)
+        self.WINDOW_TITLE = "PyDoom"
+        self.FRAMERATE_CAP = 240
+        self.BACKGROUND = (0.455, 0.204, 0.922, 1.0)
 
-    def __init__(self, width, height):
-        pygame.init()
-        display_info = pygame.display.Info()
-        self.width = display_info.current_w
-        self.height = display_info.current_h
-        self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
-        pygame.display.set_caption("Pyoom")
-        pygame.event.set_grab(True)
-        pygame.mouse.set_visible(False)
-        pygame.mouse.set_pos((self.width // 2, self.height // 2))
-        self.clock = pygame.time.Clock()
-        self.running = True
-        self.deltaTime = 0
+    def initRenderer(self) -> None:
+        glEnable(GL_TEXTURE_2D)
+        glViewport(0, 0, self.WINDOW_SIZE[0], self.WINDOW_SIZE[1])
 
-        self.camera_matrix = np.array(
-            [[800, 0, self.width / 2],
-            [0, 800, self.height / 2],
-            [0, 0, 1]], dtype=np.float32)
-        self.focal_length_x = float(self.camera_matrix[0, 0])
-        self.focal_length_y = float(self.camera_matrix[1, 1])
-        self.center_x = float(self.camera_matrix[0, 2])
-        self.center_y = float(self.camera_matrix[1, 2])
-        self.near_plane = 0.1
-        Time.deltaTime = 1.0 / gameManager.frameCap
+        # setup camera and initial position
+        set_perspective(45, self.WINDOW_SIZE[0] / self.WINDOW_SIZE[1], 0.1, 1000)
+        glTranslatef(0.0, 0.0, -5)
+        glRotatef(0, 0, 0, 0)
 
-    def beginFrame(self):
-        Time.deltaTime = self.clock.tick(gameManager.frameCap) / 1000.0
-        if pygame.mouse.get_focused():
-            pygame.event.set_grab(True)
-            pygame.mouse.set_visible(False)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
+
+        # setup face culling
+        glCullFace(GL_BACK)
+        glFrontFace(GL_CW)
+
+        glClearColor(*self.BACKGROUND)
+
+    def toggle_fullscreen(self) -> None:
+        # Best-effort: this usually preserves the OpenGL context, so textures stay valid.
+        try:
+            pygame.display.toggle_fullscreen()
+        except Exception:
+            return
+
+        surface = pygame.display.get_surface()
+        if surface is None:
+            return
+
+        self.WINDOW_SIZE = surface.get_size()
+        glViewport(0, 0, self.WINDOW_SIZE[0], self.WINDOW_SIZE[1])
+        set_perspective(45, self.WINDOW_SIZE[0] / self.WINDOW_SIZE[1], 0.1, 1000)
+        inputManager.init(self.WINDOW_SIZE)
 
     def stepRenderer(self):
-        # flip() the display to put the image on screen
-        pygame.display.flip()
+        time.updateDeltaTime()
+        dt = time.getDeltaTime()
 
-    def drawAllObjects(self):
-        for currentObject in ObjectManager.objectManager.currentObjects:
-            if isinstance(currentObject, ObjectManager.Square):
-                camera_points = [
-                    Camera.camera.world_to_camera(currentObject.topLeftVec),
-                    Camera.camera.world_to_camera(currentObject.topRightVec),
-                    Camera.camera.world_to_camera(currentObject.BottomRightVec),
-                    Camera.camera.world_to_camera(currentObject.BottomLeftVec),
-                ]
+        # Check if the user Xed out of the window
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                print("\nUser Closed Window")
+                sys.exit(0)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F4:
+                self.toggle_fullscreen()
 
-                if any(point.z <= self.near_plane for point in camera_points):
-                    continue
+        # Wipe and clear previous frame
+        glClearColor(*self.BACKGROUND)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-                pygame_points = []
-                for point in camera_points:
-                    screen_x = (self.focal_length_x * point.x / point.z) + self.center_x
-                    screen_y = (self.focal_length_y * point.y / point.z) + self.center_y
-                    pygame_points.append((int(screen_x), int(screen_y)))
+        # Get user input before rendering frame
+        inputManager.pollInput()
 
-                pygame.draw.polygon(self.screen, currentObject.color, pygame_points, 0)
+        # --- World pass (3D) ---
+        set_perspective(45, self.WINDOW_SIZE[0] / self.WINDOW_SIZE[1], 0.1, 1000)
+
+        # Apply rotations
+        glRotatef(camera.rotationX, 1, 0, 0)
+        glRotatef(camera.rotationY, 0, 1, 0)
+        glRotatef(camera.rotationZ, 0, 0, 1)
+
+        glTranslatef(-camera.x, camera.y, -camera.z - 5.0)
+
+        # draw world-space objects
+        draw_object(objectManager.objects)
+
+        # --- UI pass (2D, drawn last so it overlays the world) ---
+        glClear(GL_DEPTH_BUFFER_BIT)
+        depth_enabled = glIsEnabled(GL_DEPTH_TEST)
+        cull_enabled = glIsEnabled(GL_CULL_FACE)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+        set_ortho_ndc()
+        draw_object(objectManager.uiObjects)
+        if cull_enabled:
+            glEnable(GL_CULL_FACE)
+        if depth_enabled:
+            glEnable(GL_DEPTH_TEST)
+
+        pygame.display.flip()  # Same as glfwSwapBuffers
+
+def draw_object(object_array):
+    for i in range(len(object_array)):
+        current_object = object_array[i]
+        if isinstance(current_object, Wall):
+            draw_textured_quad(
+                current_object.texture,
+                current_object.top_left,
+                current_object.bottom_right,
+                uv_mode=getattr(current_object, "uv_mode", "tile"),
+                tile_u=getattr(current_object, "tile_u", 5.0),
+                tile_v=getattr(current_object, "tile_v", 5.0),
+                u_offset=getattr(current_object, "u_offset", 0.0),
+                v_offset=getattr(current_object, "v_offset", 0.0),
+            )
+        else:
+            raise RuntimeError(f"Object {current_object} is not a valid game object. (Instance ID: {i})")
+
+renderer = Renderer()

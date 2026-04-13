@@ -1,52 +1,94 @@
-from enum import Enum, auto
-from inspect import signature
-from GameManager import gameManager
-from Vectors import Vector3
-
-class ObjectTypes(Enum):
-    SQUARE = auto()
-    CIRCLE = auto()
+from dataclasses import dataclass
 
 
 
-class Square:
-    def __init__(self, topLeftVec, topRightVec, BottomLeftVec, BottomRightVec, color):
+class Wall:
+    def __init__(
+        self,
+        top_left,
+        bottom_right,
+        texture,
+        uv_mode: str = "tile",   # "stretch" or "tile"
+        tile_u: float = 5.0,     # repeats per world unit (U)
+        tile_v: float = 5.0,     # repeats per world unit (V)
+        u_offset: float = 0.0,
+        v_offset: float = 0.0,
+    ):
+        self.top_left = top_left
+        self.bottom_right = bottom_right
+        self.texture = texture
+        self.uv_mode = uv_mode
+        self.tile_u = tile_u
+        self.tile_v = tile_v
+        self.u_offset = u_offset
+        self.v_offset = v_offset
 
-        self.topLeftVec = topLeftVec
-        self.topRightVec = topRightVec
-        self.BottomLeftVec = BottomLeftVec
-        self.BottomRightVec = BottomRightVec
-        self.color = color
-        
+        self.top_right = (bottom_right[0], top_left[1], top_left[2])
+        self.bottom_left = (top_left[0], bottom_right[1], top_left[2])
+
+
+def create_wall(
+    pos,
+    inverse_pos,
+    texture,
+    uv_mode: str = "tile",
+    tile_u: float = 5.0,
+    tile_v: float = 5.0,
+    u_offset: float = 0.0,
+    v_offset: float = 0.0,
+) -> Wall:
+    wall = Wall(
+        pos,
+        inverse_pos,
+        texture,
+        uv_mode=uv_mode,
+        tile_u=tile_u,
+        tile_v=tile_v,
+        u_offset=u_offset,
+        v_offset=v_offset,
+    )
+
+    return objectManager.addObject(wall)
+
+def create_ui_rect(
+    pos,
+    inverse_pos,
+    texture,
+    uv_mode: str = "stretch", tile_u: float = 1.0, tile_v: float = 1.0, u_offset: float = 0.0, v_offset: float = 0.0) -> Wall:
+    wall = Wall(
+        pos,
+        inverse_pos,
+        texture,
+        uv_mode=uv_mode,
+        tile_u=tile_u,
+        tile_v=tile_v,
+        u_offset=u_offset,
+        v_offset=v_offset,
+    )
+
+    return objectManager.addUiObject(wall)
+
 
 class ObjectManager:
     def __init__(self):
-        self.currentObjects = []
-        return
+        self.objects = []
+        self.uiObjects = []
+        self.camFacingObjects = []
 
-    def createObject(self,objectType, *objectdata):
-        if objectType == ObjectTypes.SQUARE:
-            sig = signature(Square.__init__)
-            if len(objectdata) != len(sig.parameters) - 1 :
-                print("Invalid number of parameters for type SQUARE")
-                gameManager.gameShutdown(-1)
-            #if params are correct, then this part will run
-            self.currentObjects.append(Square(objectdata[0], objectdata[1], objectdata[2],objectdata[3],objectdata[4]))
+    def addObject(self, obj):
+        self.objects.append(obj)
+        return obj
 
-    def createWall(self, position: Vector3, width: float, height: float, color = "red"):
-        X = position.x
-        Y = position.y
-        Z = position.z
-        halfWidth = width / 2
-        halfHeight = height / 2
-        objectManager.createObject(
-            ObjectTypes.SQUARE,
-            Vector3(X - halfWidth, Y + halfHeight, Z),
-            Vector3(X + halfWidth, Y + halfHeight, Z),
-            Vector3(X - halfWidth, Y - halfHeight, Z),
-            Vector3(X + halfWidth, Y - halfHeight, Z),
-            color,
-        )
+    def removeObject(self, obj):
+        self.objects.remove(obj)
+
+
+    def addUiObject(self, obj):
+        self.uiObjects.append(obj)
+        return obj
+
+    def removeUiObject(self, obj):
+        self.uiObjects.remove(obj)
 
 
 objectManager = ObjectManager()
