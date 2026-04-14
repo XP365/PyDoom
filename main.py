@@ -1,13 +1,11 @@
-import os
-
 import pygame
-
 from pygame.locals import *
 
 from InputManager import inputManager
 from ObjectManager import *
 from Time import time
 from Renderer import renderer, choose_video_driver, load_texture
+from TextureManager import *
 
 
 def main() -> None:
@@ -34,19 +32,22 @@ def main() -> None:
     while True:
         renderer.stepRenderer()
 
+
 #Start of game logic behavior
 def Start():
-    texture_path = os.path.join("Assets", "Textures", "WallTemp.png")
-    texture_id = load_texture(texture_path)
+    textures.PreloadTextures()
 
-    texture_path = os.path.join("Assets", "Textures", "hud.png")
-    ui_tex = load_texture(texture_path)
+    WallTex = textures.GetTexture("Wall")
+    ui_tex = textures.GetTexture("UI_Main")
 
     create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
 
-    create_wall((0, 0, 0), (7, 5, 0), texture_id, tile_u=0.2, tile_v=0.2)
-    create_wall((5, 0, 5), (5, 5, 10), texture_id)
+    create_wall((0, 0, 0), (7, 5, 0), WallTex, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, 5), (5, 5, 10), WallTex, tile_u=0.2, tile_v=0.2)
 
+    #floors
+    floor_width = 10
+    create_floor((-floor_width, 0, -floor_width), (floor_width, 0, floor_width), WallTex, tile_u=0.2, tile_v=0.2)
 
 
 if __name__ == "__main__":

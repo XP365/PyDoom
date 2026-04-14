@@ -26,6 +26,28 @@ class Wall:
         self.top_right = (bottom_right[0], top_left[1], top_left[2])
         self.bottom_left = (top_left[0], bottom_right[1], top_left[2])
 
+class Floor:
+    def __init__(
+        self,
+        corner_a,
+        corner_b,
+        texture,
+        uv_mode: str = "tile",   # "stretch" or "tile"
+        tile_u: float = 5.0,     # repeats per world unit (U)
+        tile_v: float = 5.0,     # repeats per world unit (V)
+        u_offset: float = 0.0,
+        v_offset: float = 0.0,
+    ):
+        # Two opposite corners in XZ; Y is taken from corner_a.
+        self.corner_a = corner_a
+        self.corner_b = corner_b
+        self.texture = texture
+        self.uv_mode = uv_mode
+        self.tile_u = tile_u
+        self.tile_v = tile_v
+        self.u_offset = u_offset
+        self.v_offset = v_offset
+
 
 def create_wall(
     pos,
@@ -49,6 +71,28 @@ def create_wall(
     )
 
     return objectManager.addObject(wall)
+
+def create_floor(
+    pos,
+    inverse_pos,
+    texture,
+    uv_mode: str = "tile",
+    tile_u: float = 5.0,
+    tile_v: float = 5.0,
+    u_offset: float = 0.0,
+    v_offset: float = 0.0,
+) -> Floor:
+    floor = Floor(
+        pos,
+        inverse_pos,
+        texture,
+        uv_mode=uv_mode,
+        tile_u=tile_u,
+        tile_v=tile_v,
+        u_offset=u_offset,
+        v_offset=v_offset,
+    )
+    return objectManager.addObject(floor)
 
 def create_ui_rect(
     pos,

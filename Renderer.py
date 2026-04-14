@@ -9,7 +9,7 @@ from pygame import QUIT
 from Camera import camera
 from InputManager import inputManager
 from Time import time
-from ObjectManager import objectManager, Wall
+from ObjectManager import objectManager, Wall, Floor
 
 
 def choose_video_driver() -> None:
@@ -38,8 +38,8 @@ def load_texture(path: str) -> int:
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
     glTexImage2D(
         GL_TEXTURE_2D,
@@ -118,6 +118,78 @@ def draw_textured_quad(
 
     glEnd()
     glBindTexture(GL_TEXTURE_2D, 0)
+
+def draw_floor(
+    texture_id: int,
+    corner_a: tuple,
+    corner_b: tuple,
+    *,
+    uv_mode: str = "tile",   # "stretch" or "tile"
+    tile_u: float = 5.0,     # repeats per world unit along U (X)
+    tile_v: float = 5.0,     # repeats per world unit along V (Z)
+    u_offset: float = 0.0,
+    v_offset: float = 0.0,
+    double_sided: bool = True,
+) -> None:
+    """
+    Draw a horizontal quad in the XZ plane (a floor/ceiling).
+
+    corner_a/corner_b are opposite corners: (x, y, z). Y is taken from corner_a.
+    """
+    if texture_id is None:
+        raise RuntimeError(
+            "texture_id is None. Call renderer.initRenderer() after creating the OpenGL context "
+            "(pygame.display.set_mode(..., OPENGL)) before drawing."
+        )
+
+    x1, y, z1 = corner_a
+    x2, _, z2 = corner_b
+
+    # Normalize so (x_min, z_min) .. (x_max, z_max)
+    x_min, x_max = (x1, x2) if x1 <= x2 else (x2, x1)
+    z_min, z_max = (z1, z2) if z1 <= z2 else (z2, z1)
+
+    # Vertex order chosen for an upward-facing normal in a right-handed system.
+    vertexes = [
+        (x_min, y, z_max),
+        (x_max, y, z_max),
+        (x_max, y, z_min),
+        (x_min, y, z_min),
+    ]
+
+    if uv_mode == "stretch":
+        texcoords = [
+            (0.0 + u_offset, 0.0 + v_offset),
+            (1.0 + u_offset, 0.0 + v_offset),
+            (1.0 + u_offset, 1.0 + v_offset),
+            (0.0 + u_offset, 1.0 + v_offset),
+        ]
+    else:
+        quad_width = abs(x_max - x_min)
+        quad_depth = abs(z_max - z_min)
+        repeat_u = quad_width * tile_u
+        repeat_v = quad_depth * tile_v
+        texcoords = [
+            (0.0 + u_offset, 0.0 + v_offset),
+            (repeat_u + u_offset, 0.0 + v_offset),
+            (repeat_u + u_offset, repeat_v + v_offset),
+            (0.0 + u_offset, repeat_v + v_offset),
+        ]
+
+    cull_enabled = glIsEnabled(GL_CULL_FACE)
+    if double_sided and cull_enabled:
+        glDisable(GL_CULL_FACE)
+
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+    glBegin(GL_QUADS)
+    for index, vertex in enumerate(vertexes):
+        glTexCoord2f(texcoords[index][0], texcoords[index][1])
+        glVertex3fv(vertex)
+    glEnd()
+    glBindTexture(GL_TEXTURE_2D, 0)
+
+    if double_sided and cull_enabled:
+        glEnable(GL_CULL_FACE)
 
 
 def set_perspective(fov_degrees: float, aspect_ratio: float, near: float, far: float) -> None:
@@ -244,6 +316,18 @@ def draw_object(object_array):
                 tile_v=getattr(current_object, "tile_v", 5.0),
                 u_offset=getattr(current_object, "u_offset", 0.0),
                 v_offset=getattr(current_object, "v_offset", 0.0),
+            )
+        elif isinstance(current_object, Floor):
+            draw_floor(
+                current_object.texture,
+                current_object.corner_a,
+                current_object.corner_b,
+                uv_mode=getattr(current_object, "uv_mode", "tile"),
+                tile_u=getattr(current_object, "tile_u", 5.0),
+                tile_v=getattr(current_object, "tile_v", 5.0),
+                u_offset=getattr(current_object, "u_offset", 0.0),
+                v_offset=getattr(current_object, "v_offset", 0.0),
+                double_sided=True,
             )
         else:
             raise RuntimeError(f"Object {current_object} is not a valid game object. (Instance ID: {i})")
