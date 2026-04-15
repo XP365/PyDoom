@@ -217,7 +217,7 @@ def set_ortho_ndc() -> None:
 class Renderer:
     def __init__(self):
         self.texture_id = None
-        self.WINDOW_SIZE = (1920, 1080)
+        self.WINDOW_SIZE = (1920 / 1.5, 1080 / 1.5)
         self.WINDOW_TITLE = "PyDoom"
         self.FRAMERATE_CAP = 240
         self.BACKGROUND = (0.455, 0.204, 0.922, 1.0)
