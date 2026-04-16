@@ -220,7 +220,7 @@ class Renderer:
         self.WINDOW_SIZE = (1920, 1080)
         self.WINDOW_TITLE = "PyDoom"
         self.FRAMERATE_CAP = 240
-        self.BACKGROUND = (0.455, 0.204, 0.922, 1.0)
+        self.BACKGROUND = (0, 0, 0, 1.0)
 
     def initRenderer(self) -> None:
         glEnable(GL_TEXTURE_2D)
@@ -244,6 +244,8 @@ class Renderer:
         # Best-effort: this usually preserves the OpenGL context, so textures stay valid.
         try:
             pygame.display.toggle_fullscreen()
+            width, height = pygame.display.get_surface().get_size()
+            GL_VIEWPORT(width, height)
         except Exception:
             return
 
@@ -261,9 +263,8 @@ class Renderer:
         dt = time.getDeltaTime()
 
         # Check if the user Xed out of the window
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                print("\nUser Closed Window")
+        for event in pygame.event.get([pygame.QUIT, pygame.KEYDOWN]):
+            if event.type == pygame.QUIT:
                 sys.exit(0)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_F4:
                 self.toggle_fullscreen()

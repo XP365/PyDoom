@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 
 from InputManager import inputManager
+from MusicManager import musicManager
 from ObjectManager import *
 from Time import time
 from Renderer import renderer, choose_video_driver, load_texture
@@ -36,7 +37,9 @@ def main() -> None:
 #Start of game logic behavior
 def Start():
     textures.PreloadTextures()
+    musicManager.PreloadMusic()
 
+    #Get texture refs
     WallTex = textures.GetTexture("Wall")
     ui_tex = textures.GetTexture("UI_Main")
 

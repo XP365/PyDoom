@@ -3,6 +3,7 @@ import math
 import pygame
 from Camera import camera
 from Time import time
+from MusicManager import musicManager
 
 # Adjust these to your liking
 mouse_sensitivity = 0.15
@@ -81,6 +82,11 @@ class InputManager:
         if keys[pygame.K_d]:
             camera.x += right_x * moveSpeed * dt
             camera.z += right_z * moveSpeed * dt
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == pygame.BUTTON_LEFT:
+                    musicManager.PlaySound("Shotgun Sound")
 
         # Fallback: keep the cursor centered if relative mode isn't available.
         if (not self._relative_ok) and (self._center is not None):
