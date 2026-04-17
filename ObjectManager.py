@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
+from PhysicsManager import physicsManager
 
+def getXZfromTupple(tuple):
+    return tuple[0], tuple[2]
 
 class Wall:
     def __init__(
@@ -70,6 +73,8 @@ def create_wall(
         v_offset=v_offset,
     )
 
+    upper_pos = wall.top_left[1]
+    physicsManager.AddCollider((wall.top_left[0], wall.top_left[1]), wall.top_right[0:2], (wall.bottom_right[0], -wall.bottom_right[1]), (wall.bottom_left[0], -wall.bottom_left[1]))
     return objectManager.addObject(wall)
 
 def create_floor(

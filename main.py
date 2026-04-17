@@ -4,9 +4,11 @@ from pygame.locals import *
 from InputManager import inputManager
 from MusicManager import musicManager
 from ObjectManager import *
-from Time import time
+from Time import *
 from Renderer import renderer, choose_video_driver, load_texture
 from TextureManager import *
+from PhysicsManager import *
+from Camera import *
 
 
 def main() -> None:
@@ -32,6 +34,8 @@ def main() -> None:
 
     while True:
         renderer.stepRenderer()
+
+        physicsManager.CheckCollisions((camera.x, camera.z))
 
 
 #Start of game logic behavior
