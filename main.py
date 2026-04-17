@@ -33,9 +33,17 @@ def main() -> None:
     Start()
 
     while True:
+        # Save position before movement
+        old_pos = (camera.x, camera.z)
+        
         renderer.stepRenderer()
 
-        physicsManager.CheckCollisions((camera.x, camera.z))
+        # Check if the new position causes a collision
+        _, has_collision = physicsManager.CheckCollisions((camera.x, camera.z))
+        
+        # If collision detected, revert to the old position
+        if has_collision:
+            camera.x, camera.z = old_pos
 
 
 #Start of game logic behavior

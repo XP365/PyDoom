@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from PhysicsManager import physicsManager
+import glm
 
 def getXZfromTupple(tuple):
     return tuple[0], tuple[2]
@@ -61,6 +62,7 @@ def create_wall(
     tile_v: float = 5.0,
     u_offset: float = 0.0,
     v_offset: float = 0.0,
+    collider_thickness: float = 0.5,
 ) -> Wall:
     wall = Wall(
         pos,
@@ -74,7 +76,40 @@ def create_wall(
     )
 
     upper_pos = wall.top_left[1]
-    physicsManager.AddCollider((wall.top_left[0], wall.top_left[1]), wall.top_right[0:2], (wall.bottom_right[0], -wall.bottom_right[1]), (wall.bottom_left[0], -wall.bottom_left[1]))
+
+    # Create physics collider from the wall's XZ footprint
+    # The wall is defined by top_left (x1, y, z1) and bottom_right (x2, y, z2)
+    # We create a collider with a thickness parameter
+    x1 = wall.top_left[0]
+    z1 = wall.top_left[2]
+    x2 = wall.bottom_right[0]
+    z2 = wall.bottom_right[2]
+    
+    # Ensure we have a valid rectangle
+    if x1 == x2 and z1 == z2:
+        # Point, not a wall - skip collider
+        return objectManager.addObject(wall)
+    
+    if x1 == x2:
+        # Vertical line in XZ (constant X) - extend in Z with thickness in X
+        corner_tl = (x1 - collider_thickness/2, z1)
+        corner_tr = (x1 + collider_thickness/2, z1)
+        corner_br = (x1 + collider_thickness/2, z2)
+        corner_bl = (x1 - collider_thickness/2, z2)
+    elif z1 == z2:
+        # Horizontal line in XZ (constant Z) - extend in X with thickness in Z
+        corner_tl = (x1, z1 - collider_thickness/2)
+        corner_tr = (x2, z1 - collider_thickness/2)
+        corner_br = (x2, z1 + collider_thickness/2)
+        corner_bl = (x1, z1 + collider_thickness/2)
+    else:
+        # Diagonal or actual rectangle - use as-is
+        corner_tl = (x1, z1)
+        corner_tr = (x2, z1)
+        corner_br = (x2, z2)
+        corner_bl = (x1, z2)
+    
+    physicsManager.AddCollider(corner_tl, corner_tr, corner_br, corner_bl)
     return objectManager.addObject(wall)
 
 def create_floor(

@@ -10,6 +10,7 @@ from Camera import camera
 from InputManager import inputManager
 from Time import time
 from ObjectManager import objectManager, Wall, Floor
+from DebugManager import debugManager
 
 
 def choose_video_driver() -> None:
@@ -228,7 +229,7 @@ class Renderer:
 
         # setup camera and initial position
         set_perspective(45, self.WINDOW_SIZE[0] / self.WINDOW_SIZE[1], 0.1, 1000)
-        glTranslatef(0.0, 0.0, -5)
+        glTranslatef(0.0, 0.0, 0.0)
         glRotatef(0, 0, 0, 0)
 
         glEnable(GL_DEPTH_TEST)
@@ -275,6 +276,9 @@ class Renderer:
 
         # Get user input before rendering frame
         inputManager.pollInput()
+        
+        # Update debug manager (check for toggle key)
+        debugManager.update()
 
         # --- World pass (3D) ---
         set_perspective(45, self.WINDOW_SIZE[0] / self.WINDOW_SIZE[1], 0.1, 1000)
@@ -284,10 +288,17 @@ class Renderer:
         glRotatef(camera.rotationY, 0, 1, 0)
         glRotatef(camera.rotationZ, 0, 0, 1)
 
-        glTranslatef(-camera.x, camera.y, -camera.z - 5.0)
+        
+
+        glTranslatef(-camera.x, camera.y, -camera.z)
+
+        debugManager.draw_debug((camera.x, camera.z))
 
         # draw world-space objects
         draw_object(objectManager.objects)
+        
+        # Draw debug visualizations
+        
 
         # --- UI pass (2D, drawn last so it overlays the world) ---
         glClear(GL_DEPTH_BUFFER_BIT)

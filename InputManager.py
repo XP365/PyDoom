@@ -14,6 +14,7 @@ class InputManager:
     def __init__(self):
         self._center = None
         self._relative_ok = False
+        self._keys_pressed_last_frame = set()
 
     def init(self, window_size: tuple[int, int]) -> None:
         # Must be called after the window exists (after pygame.display.set_mode).
@@ -34,6 +35,17 @@ class InputManager:
 
         # Flush any accumulated movement from initialization.
         pygame.mouse.get_rel()
+
+    def is_key_pressed(self, key: int) -> bool:
+        """Check if a key was just pressed this frame (not held from previous frame)"""
+        keys = pygame.key.get_pressed()
+        if key >= len(keys):
+            return False
+        is_currently_pressed = keys[key]
+        was_pressed_last_frame = key in self._keys_pressed_last_frame
+        
+        # Return True only if pressed now but wasn't pressed last frame
+        return is_currently_pressed and not was_pressed_last_frame
 
     def pollInput(self):
         dt = time.getDeltaTime()
@@ -92,6 +104,9 @@ class InputManager:
         if (not self._relative_ok) and (self._center is not None):
             pygame.mouse.set_pos(self._center)
             pygame.mouse.get_rel()  # Flush any warp-induced delta.
+        
+        # Update tracked keys for next frame - only track keys that are pressed
+        self._keys_pressed_last_frame = set(i for i, pressed in enumerate(keys) if pressed)
 
 
 inputManager = InputManager()
