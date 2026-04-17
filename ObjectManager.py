@@ -17,6 +17,7 @@ class Wall:
         tile_v: float = 5.0,     # repeats per world unit (V)
         u_offset: float = 0.0,
         v_offset: float = 0.0,
+        double_sided: bool = False,
     ):
         self.top_left = top_left
         self.bottom_right = bottom_right
@@ -63,6 +64,7 @@ def create_wall(
     u_offset: float = 0.0,
     v_offset: float = 0.0,
     collider_thickness: float = 0.5,
+    double_sided: bool = False,
 ) -> Wall:
     wall = Wall(
         pos,
@@ -76,6 +78,7 @@ def create_wall(
     )
 
     upper_pos = wall.top_left[1]
+    wall.double_sided = double_sided
 
     # Create physics collider from the wall's XZ footprint
     # The wall is defined by top_left (x1, y, z1) and bottom_right (x2, y, z2)

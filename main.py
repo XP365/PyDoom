@@ -9,6 +9,7 @@ from Renderer import renderer, choose_video_driver, load_texture
 from TextureManager import *
 from PhysicsManager import *
 from Camera import *
+from LevelManager import *
 
 
 def main() -> None:
@@ -62,6 +63,8 @@ def Start():
     #floors
     floor_width = 10
     create_floor((-floor_width, 0, -floor_width), (floor_width, 0, floor_width), WallTex, tile_u=0.2, tile_v=0.2)
+
+    levelManager.load_level("Level1")
 
 
 if __name__ == "__main__":

@@ -68,6 +68,7 @@ def draw_textured_quad(
     tile_v: float = 5.0,     # repeats per world unit along V
     u_offset: float = 0.0,
     v_offset: float = 0.0,
+    double_sided: bool = False,
 ) -> None:
     if texture_id is None:
         raise RuntimeError(
@@ -110,6 +111,10 @@ def draw_textured_quad(
             (0.0 + u_offset, repeat_v + v_offset),
         ]
 
+    was_cull_enabled = glIsEnabled(GL_CULL_FACE)
+    if double_sided and was_cull_enabled:
+        glDisable(GL_CULL_FACE)
+
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glBegin(GL_QUADS)
 
@@ -119,6 +124,9 @@ def draw_textured_quad(
 
     glEnd()
     glBindTexture(GL_TEXTURE_2D, 0)
+
+    if double_sided and was_cull_enabled:
+        glEnable(GL_CULL_FACE)
 
 def draw_floor(
     texture_id: int,
@@ -328,6 +336,7 @@ def draw_object(object_array):
                 tile_v=getattr(current_object, "tile_v", 5.0),
                 u_offset=getattr(current_object, "u_offset", 0.0),
                 v_offset=getattr(current_object, "v_offset", 0.0),
+                double_sided=getattr(current_object, "double_sided", False),
             )
         elif isinstance(current_object, Floor):
             draw_floor(

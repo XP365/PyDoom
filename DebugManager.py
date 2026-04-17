@@ -86,6 +86,20 @@ class DebugManager:
         for point in polygon.points:
             glVertex3f(point.x, 0.0, point.y)
         glEnd()
+    
+    def draw_debug_text(self, player_pos: tuple) -> None:
+        """Print debug text information to console
+        
+        Args:
+            player_pos: Tuple of (x, z) representing player position
+        """
+        if not self.debug_enabled:
+            return
+        
+        x, z = player_pos
+        collider_count = len(physicsManager.colliders)
+        
+        print(f"[DEBUG] Player Pos: ({x:.2f}, {z:.2f}) | Colliders: {collider_count}")
 
 
 # Debug manager singleton
