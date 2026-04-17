@@ -38,12 +38,11 @@ def main() -> None:
         
         renderer.stepRenderer()
 
-        # Check if the new position causes a collision
-        _, has_collision = physicsManager.CheckCollisions((camera.x, camera.z))
+        # Check if the new position causes a collision, allow sliding
+        adjusted_pos, has_collision = physicsManager.CheckCollisions((camera.x, camera.z), old_pos)
         
-        # If collision detected, revert to the old position
-        if has_collision:
-            camera.x, camera.z = old_pos
+        # Apply the adjusted position (either reverted or slid)
+        camera.x, camera.z = adjusted_pos
 
 
 #Start of game logic behavior
