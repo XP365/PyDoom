@@ -17,17 +17,17 @@ class DebugManager:
         self.player_collider_height = 0.5
         
     def toggle_debug(self) -> None:
-        """Toggle debug visualization on/off"""
+        #Toggle debug visualization on/off
         self.debug_enabled = not self.debug_enabled
         print(f"[DEBUG] Debug mode: {'ON' if self.debug_enabled else 'OFF'}")
     
     def update(self) -> None:
-        """Check for debug toggle key"""
+        #Check for debug toggle key
         if inputManager.is_key_pressed(K_p):
             self.toggle_debug()
     
     def draw_debug(self, player_pos: tuple) -> None:
-        """Draw debug visualizations (player and hitboxes)."""
+        #Draw debug visualizations (player and hitboxes).
         if not self.debug_enabled:
             return
         
@@ -45,7 +45,7 @@ class DebugManager:
         glEnable(GL_CULL_FACE)
     
     def _draw_player_position(self, player_pos: tuple) -> None:
-        """Draw player collider as green box with cyan center line."""
+        #Draw player collider as green box with cyan center line.
         x, z = player_pos
         
         glColor4f(0.0, 1.0, 0.0, 1.0)
@@ -78,7 +78,7 @@ class DebugManager:
         glLineWidth(1.0)
     
     def _draw_collider_polygon(self, polygon) -> None:
-        """Draw a single polygon collider outline."""
+        #Draw a single polygon collider outline.
         if not hasattr(polygon, 'points') or not polygon.points:
             return
         

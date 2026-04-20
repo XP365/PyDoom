@@ -4,7 +4,7 @@ import pygame
 from Camera import camera
 from Time import time
 from MusicManager import musicManager
-from LevelManager import LevelManager
+from LevelManager import LevelManager, levelManager
 
 # Adjust these to your liking
 mouse_sensitivity = 0.15
@@ -15,7 +15,8 @@ class InputManager:
     def __init__(self):
         self._center = None
         self._relative_ok = False
-        self._keys_pressed_last_frame = set()
+        self._keys_down = None
+        self._keys_down_prev = None
 
     def init(self, window_size: tuple[int, int]) -> None:
         # Must be called after the window exists (after pygame.display.set_mode).
@@ -38,19 +39,21 @@ class InputManager:
         pygame.mouse.get_rel()
 
     def is_key_pressed(self, key: int) -> bool:
-        """Check if a key was just pressed this frame (not held from previous frame)"""
-        keys = pygame.key.get_pressed()
+        """True only on the frame the key transitions up->down."""
+        keys = self._keys_down if self._keys_down is not None else pygame.key.get_pressed()
+        prev_keys = self._keys_down_prev
+
         if key >= len(keys):
             return False
-        is_currently_pressed = keys[key]
-        was_pressed_last_frame = key in self._keys_pressed_last_frame
-        
-        # Return True only if pressed now but wasn't pressed last frame
+        is_currently_pressed = bool(keys[key])
+        was_pressed_last_frame = bool(prev_keys[key]) if prev_keys is not None and key < len(prev_keys) else False
         return is_currently_pressed and not was_pressed_last_frame
 
     def pollInput(self):
         dt = time.getDeltaTime()
+        self._keys_down_prev = self._keys_down
         keys = pygame.key.get_pressed()
+        self._keys_down = keys
 
         # --- Close Game ---
         if keys[pygame.K_ESCAPE]:
@@ -102,19 +105,14 @@ class InputManager:
                 if event.button == pygame.BUTTON_LEFT:
                     musicManager.PlaySound("Shotgun Sound")
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    LevelManager.load_level("Level1")
-                    
+                if event.button == pygame.BUTTON_RIGHT:
+                    levelManager.reload_level()
 
 
         # Fallback: keep the cursor centered if relative mode isn't available.
         if (not self._relative_ok) and (self._center is not None):
             pygame.mouse.set_pos(self._center)
             pygame.mouse.get_rel()  # Flush any warp-induced delta.
-        
-        # Update tracked keys for next frame - only track keys that are pressed
-        self._keys_pressed_last_frame = set(i for i, pressed in enumerate(keys) if pressed)
 
 
 inputManager = InputManager()

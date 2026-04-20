@@ -10,7 +10,9 @@ from TextureManager import *
 from PhysicsManager import *
 from Camera import *
 from LevelManager import *
+from OpenGL.GL import *
 
+IS_MULTISAMPLING_ENABLED = True
 
 def main() -> None:
 
@@ -20,13 +22,23 @@ def main() -> None:
     #pygame setup
     pygame.init()
     pygame.display.set_caption(renderer.WINDOW_TITLE)
+    pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
     pygame.display.set_mode(renderer.WINDOW_SIZE, DOUBLEBUF | OPENGL)
+
+    icon = pygame.image.load(os.path.join("Assets", "Icons", "windowicon.png")).convert_alpha()
+    pygame.display.set_icon(icon)
+
     # Sync renderer sizing/aspect ratio to the actual surface.
     renderer.WINDOW_SIZE = pygame.display.get_surface().get_size()
     inputManager.init(renderer.WINDOW_SIZE)
 
     # OpenGL setup must happen after the OpenGL context exists (after set_mode).
     renderer.initRenderer()
+
+    #Easy toggle for performance reason
+    if IS_MULTISAMPLING_ENABLED:
+
+        glEnable(GL_MULTISAMPLE)
 
     #msc setup
     time.initTime(renderer.FRAMERATE_CAP)
@@ -57,12 +69,6 @@ def Start():
 
     create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
 
-    create_wall((0, 0, 0), (7, 5, 0), WallTex, tile_u=0.2, tile_v=0.2)
-    create_wall((5, 0, 5), (5, 5, 10), WallTex, tile_u=0.2, tile_v=0.2)
-
-    #floors
-    floor_width = 10
-    create_floor((-floor_width, 0, -floor_width), (floor_width, 0, floor_width), WallTex, tile_u=0.2, tile_v=0.2)
 
     levelManager.load_level("Level1")
 

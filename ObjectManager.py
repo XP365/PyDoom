@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from PhysicsManager import physicsManager
 import glm
+from math import sqrt
 
 def getXZfromTupple(tuple):
     return tuple[0], tuple[2]
@@ -106,11 +107,24 @@ def create_wall(
         corner_br = (x2, z1 + collider_thickness/2)
         corner_bl = (x1, z1 + collider_thickness/2)
     else:
-        # Diagonal or actual rectangle - use as-is
-        corner_tl = (x1, z1)
-        corner_tr = (x2, z1)
-        corner_br = (x2, z2)
-        corner_bl = (x1, z2)
+        # Diagonal wall segment: build a constant-thickness oriented rectangle around the segment.
+        # The old implementation used an axis-aligned box from (x1,z1) to (x2,z2), which "sticks out"
+        # for angled walls and makes them feel wider than intended.
+        dx = x2 - x1
+        dz = z2 - z1
+        seg_len = sqrt(dx * dx + dz * dz)
+        if seg_len == 0:
+            return objectManager.addObject(wall)
+
+        half_t = abs(collider_thickness) / 2.0
+        # Unit perpendicular (left normal) in XZ.
+        px = -dz / seg_len
+        pz = dx / seg_len
+
+        corner_tl = (x1 + px * half_t, z1 + pz * half_t)
+        corner_tr = (x2 + px * half_t, z2 + pz * half_t)
+        corner_br = (x2 - px * half_t, z2 - pz * half_t)
+        corner_bl = (x1 - px * half_t, z1 - pz * half_t)
     
     physicsManager.AddCollider(corner_tl, corner_tr, corner_br, corner_bl)
     return objectManager.addObject(wall)
