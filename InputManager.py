@@ -4,7 +4,7 @@ import pygame
 from Camera import camera
 from Time import time
 from MusicManager import musicManager
-from LevelManager import LevelManager, levelManager
+from LevelManager import levelManager
 
 # Adjust these to your liking
 mouse_sensitivity = 0.15
@@ -81,6 +81,8 @@ class InputManager:
         # Forward Vector
         forward_x = math.sin(angle)
         forward_z = -math.cos(angle)
+
+        camera.forward_vector = (forward_x, forward_z)
 
         # Right Vector (Strafe)
         right_x = math.cos(angle)

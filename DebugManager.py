@@ -15,6 +15,8 @@ class DebugManager:
         self.debug_enabled = False
         self.player_collider_width = 0.5
         self.player_collider_height = 0.5
+
+        physicsManager.debugManager = self  # Allow PhysicsManager to call debug drawing if needed
         
     def toggle_debug(self) -> None:
         #Toggle debug visualization on/off
@@ -74,6 +76,11 @@ class DebugManager:
         
         for collider in physicsManager.colliders:
             self._draw_collider_polygon(collider)
+
+        for collider in physicsManager.debug_colliders:
+            self._draw_collider_polygon(collider)
+        
+        physicsManager.debug_colliders.clear()  # Clear debug colliders after drawing
         
         glLineWidth(1.0)
     

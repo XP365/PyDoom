@@ -12,5 +12,8 @@ class Camera:
         self.rotationY = 0.0
         self.rotationZ = 0.0
 
+        self.forward_vector = (0,0)
+        self.camera_pos_2d = (0,0)
+
 
 camera = Camera()

@@ -14,6 +14,8 @@ class Time:
         dt_ms = self.clock.tick(self.FRAMERATE_CAP)
         self.dt = dt_ms / 1000.0
 
+        print(f"FPS: {self.clock.get_fps():.2f}, Delta Time: {self.dt:.4f} seconds")
+
     def getDeltaTime(self):
         return self.dt
 

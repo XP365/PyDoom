@@ -56,12 +56,17 @@ def main() -> None:
         
         # Apply the adjusted position (either reverted or slid)
         camera.x, camera.z = adjusted_pos
+        camera.camera_pos_2d = adjusted_pos
+
+        Update()
 
 
 #Start of game logic behavior
 def Start():
     textures.PreloadTextures()
     musicManager.PreloadMusic()
+
+    musicManager.PlayMusic("Main Theme")
 
     #Get texture refs
     WallTex = textures.GetTexture("Wall")
@@ -71,6 +76,10 @@ def Start():
 
 
     levelManager.load_level("Level1")
+
+def Update():
+    physicsManager.Raycast((camera.camera_pos_2d[0] + 1, camera.camera_pos_2d[1] + 1), camera.forward_vector)
+
 
 
 if __name__ == "__main__":

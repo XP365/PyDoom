@@ -13,10 +13,6 @@ class MusicManager:
 
         pygame.mixer.init()
 
-        path = os.path.join("Assets", "Audio", "Music", "MainTheme.mp3")
-        pygame.mixer.music.load(path)
-        pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(MusicVolume)
 
     def AddPreloadedMusic(self, path, alias):
         try:
@@ -28,6 +24,7 @@ class MusicManager:
 
     def PreloadMusic(self):
             self.AddPreloadedMusic(os.path.join("Assets", "Audio", "SFX", "shotgun.mp3"), "Shotgun Sound")
+            self.AddPreloadedMusic(os.path.join("Assets", "Audio", "Music", "MainTheme.mp3"), "Main Theme")
 
 
     def PlaySound(self, alias):
@@ -40,7 +37,18 @@ class MusicManager:
         else:
             print(f"Alias '{alias}' not found in preloaded audio.")
 
+    #ineficient, resolve later
+    def PlayMusic(self, alias):
+        if alias in self.preloadedAudio:
+            sound = self.preloadedAudio[alias]
+
+            # Set the volume
+            sound.set_volume(self.MusicVolume)
+            sound.play()
+        else:
+            print(f"Alias '{alias}' not found in preloaded audio.")
 
 
 
-musicManager = MusicManager(0.3, 1, 1)
+                            #0.3
+musicManager = MusicManager(0, 1, 1)
