@@ -10,8 +10,8 @@ def getXZfromTupple(tuple):
 class Wall:
     def __init__(
         self,
-        top_left,
-        bottom_right,
+        top_left : tuple[float, float, float],
+        bottom_right : tuple[float, float, float],
         texture,
         uv_mode: str = "tile",   # "stretch" or "tile"
         tile_u: float = 5.0,     # repeats per world unit (U)
@@ -76,10 +76,10 @@ def create_wall(
         tile_v=tile_v,
         u_offset=u_offset,
         v_offset=v_offset,
+        double_sided=double_sided,
     )
 
     upper_pos = wall.top_left[1]
-    wall.double_sided = double_sided
 
     # Create physics collider from the wall's XZ footprint
     # The wall is defined by top_left (x1, y, z1) and bottom_right (x2, y, z2)
@@ -126,7 +126,7 @@ def create_wall(
         corner_br = (x2 - px * half_t, z2 - pz * half_t)
         corner_bl = (x1 - px * half_t, z1 - pz * half_t)
     
-    physicsManager.AddCollider(corner_tl, corner_tr, corner_br, corner_bl)
+    physicsManager.AddCollider(wall, corner_tl, corner_tr, corner_br, corner_bl)
     return objectManager.addObject(wall)
 
 def create_floor(

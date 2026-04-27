@@ -5,10 +5,73 @@ from Camera import camera
 from Time import time
 from MusicManager import musicManager
 from LevelManager import levelManager
+from ObjectManager import *
+from TextureManager import textures
 
 # Adjust these to your liking
 mouse_sensitivity = 0.15
-moveSpeed = 5.0
+
+class PlayerController:
+
+    def __init__(self):
+        #Player Properties
+        self.can_move = True
+        self.can_shoot = True
+        self.moveSpeed = 5.0
+
+    def SetupPlayer(self):
+        #Setup UI
+        ui_tex = textures.GetTexture("UI_Main")
+
+        self.MainUI = create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
+        self.Gun = create_ui_rect((-0.5,-0.5,0), (0.5,0.5,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
+
+
+    def ShootWeapon(self):
+        """Handle shooting logic, including raycasting and hit detection. Returns false if shooting was disabled, otherwise returns the result of the raycast (hit object or None)."""
+        if self.can_shoot == False:
+            return False
+        
+        # Implement shooting logic here
+        hitObject = physicsManager.Raycast((camera.camera_pos_2d[0] + 1, camera.camera_pos_2d[1] + 1), camera.forward_vector)
+        return hitObject
+    
+    def MovePlayer(self, dt):
+        """Move the player based on input and delta time. Returns false if movement was disabled, otherwise returns true."""
+        if self.can_move == False:
+            return False
+        
+        keys = pygame.key.get_pressed()
+
+        angle = math.radians(camera.rotationY)
+        
+        # Forward Vector
+        forward_x = math.sin(angle)
+        forward_z = -math.cos(angle)
+
+        camera.forward_vector = (forward_x, forward_z)
+
+        print(camera.x, camera.y,camera.z)
+        # Right Vector (Strafe)
+        right_x = math.cos(angle)
+        right_z = math.sin(angle)
+        
+        if keys[pygame.K_w]:
+            camera.x += forward_x * self.moveSpeed * dt
+            camera.z += forward_z * self.moveSpeed * dt
+        if keys[pygame.K_s]:
+            camera.x -= forward_x * self.moveSpeed * dt
+            camera.z -= forward_z * self.moveSpeed * dt
+        if keys[pygame.K_a]:
+            camera.x -= right_x * self.moveSpeed * dt
+            camera.z -= right_z * self.moveSpeed * dt
+        if keys[pygame.K_d]:
+            camera.x += right_x * self.moveSpeed * dt
+            camera.z += right_z * self.moveSpeed * dt
+
+
+playerController = PlayerController()
+
 
 
 class InputManager:
@@ -28,7 +91,7 @@ class InputManager:
 
         # Preferred: relative mouse mode keeps motion working without warping the cursor.
         try:
-            self._relative_ok = bool(pygame.mouse.set_relative(True))
+            self._relative_ok = bool(pygame.mouse.set_relative(True)) # type: ignore
         except Exception:
             self._relative_ok = False
 
@@ -74,32 +137,10 @@ class InputManager:
         # Clamp vertical look so you can't flip upside down
         if camera.rotationX > 90: camera.rotationX = 90
         if camera.rotationX < -90: camera.rotationX = -90
+        
 
-        # --- MOVEMENT  ---
-        angle = math.radians(camera.rotationY)
-
-        # Forward Vector
-        forward_x = math.sin(angle)
-        forward_z = -math.cos(angle)
-
-        camera.forward_vector = (forward_x, forward_z)
-
-        # Right Vector (Strafe)
-        right_x = math.cos(angle)
-        right_z = math.sin(angle)
-
-        if keys[pygame.K_w]:
-            camera.x += forward_x * moveSpeed * dt
-            camera.z += forward_z * moveSpeed * dt
-        if keys[pygame.K_s]:
-            camera.x -= forward_x * moveSpeed * dt
-            camera.z -= forward_z * moveSpeed * dt
-        if keys[pygame.K_a]:
-            camera.x -= right_x * moveSpeed * dt
-            camera.z -= right_z * moveSpeed * dt
-        if keys[pygame.K_d]:
-            camera.x += right_x * moveSpeed * dt
-            camera.z += right_z * moveSpeed * dt
+        if keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]:
+            playerController.MovePlayer(dt)
 
 
         for event in pygame.event.get():
