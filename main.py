@@ -6,11 +6,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
 import pygame
 from pygame.locals import *
 
-from InputManager import inputManager
+from InputManager import inputManager, playerController
 from MusicManager import musicManager
 from ObjectManager import *
 from Time import *
-from Renderer import renderer, choose_video_driver, load_texture
+from Renderer import renderer, choose_video_driver
 from TextureManager import *
 from PhysicsManager import *
 from Camera import *
@@ -73,17 +73,12 @@ def Start():
 
     musicManager.PlayMusic("Main Theme")
 
-    #Get texture refs
-    WallTex = textures.GetTexture("Wall")
-    ui_tex = textures.GetTexture("UI_Main")
-
-    create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
-
+    playerController.SetupPlayer()
 
     levelManager.load_level("Level1")
 
 def Update():
-    physicsManager.Raycast((camera.camera_pos_2d[0] + 1, camera.camera_pos_2d[1] + 1), camera.forward_vector)
+    pass
 
 
 

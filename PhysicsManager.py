@@ -12,7 +12,7 @@ class PhysicsManager:
         self.last_valid_pos = (0.0, 0.0)
         self.debugManager = None  # Will be set by DebugManager for debug drawing
 
-    def AddCollider(self, topleft, topright, bottomright, bottomleft):
+    def AddCollider(self, obj, topleft, topright, bottomright, bottomleft):
         #Create a collider polygon from four corner points.
         pts = [topleft, topright, bottomright, bottomleft]
         try:
@@ -21,7 +21,7 @@ class PhysicsManager:
             print(f"Error creating collider: {e}")
             return None
         
-        self.colliders.append(polygon)
+        self.colliders.append((obj, polygon))
         return polygon
 
     def CheckCollisions(self, playerPos, lastPos=None):
@@ -49,7 +49,7 @@ class PhysicsManager:
         has_collision = False
         collision_normal = None
         
-        for collider in self.colliders:
+        for obj, collider in self.colliders:
             if collide(playerCollider, collider, self.response):
                 has_collision = True
                 collision_normal = self.response.overlap_n
@@ -84,7 +84,7 @@ class PhysicsManager:
         ])
 
         
-        for collider in self.colliders:
+        for obj, collider in self.colliders:
             self.response.reset()
             if collide(slide_collider, collider, self.response):
                 return tuple(lastPos), True
@@ -139,13 +139,14 @@ class PhysicsManager:
             self.debug_colliders.append(raycastCollider)
 
 
-            for collider in self.colliders:
+            for obj, collider in self.colliders:
                 if collide(raycastCollider, collider, self.response):
                     print(f"Collision at position: {self.response.overlap_v} with normal: {self.response.overlap_n}")
-                    break
+                    return obj
             else:
                 continue
             break
+        return None
 
 
 
