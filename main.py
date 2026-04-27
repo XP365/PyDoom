@@ -1,3 +1,8 @@
+#add the local path to the library search dir
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
+
 import pygame
 from pygame.locals import *
 
