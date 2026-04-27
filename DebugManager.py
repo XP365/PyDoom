@@ -15,18 +15,19 @@ class DebugManager:
         self.debug_enabled = False
         self.player_collider_width = 0.5
         self.player_collider_height = 0.5
-
-        physicsManager.debugManager = self  # Allow PhysicsManager to call debug drawing if needed
         
     def toggle_debug(self) -> None:
         #Toggle debug visualization on/off
         self.debug_enabled = not self.debug_enabled
         print(f"[DEBUG] Debug mode: {'ON' if self.debug_enabled else 'OFF'}")
+
     
     def update(self) -> None:
         #Check for debug toggle key
         if inputManager.is_key_pressed(K_p):
             self.toggle_debug()
+        elif self.debug_enabled == False:
+            physicsManager.debug_colliders.clear() #clear the debug hitboxes for raycasting this frame
     
     def draw_debug(self, player_pos: tuple) -> None:
         #Draw debug visualizations (player and hitboxes).
