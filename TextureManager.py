@@ -19,6 +19,8 @@ class Textures:
     def PreloadTextures(self):
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "WallTemp.png"), "Wall")
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "hud.png"), "UI_Main")
+        self.AddPreloadedTexture(os.path.join("Assets", "Textures", "RedSkyWRock.png"), "Red_Wall")
+
 
 
 textures = Textures()
