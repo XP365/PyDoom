@@ -17,7 +17,14 @@ class PlayerController:
         #Player Properties
         self.can_move = True
         self.can_shoot = True
-        self.moveSpeed = 5.0
+
+
+        self.moveSpeedForward = 0
+        self.moveSpeedSideways = 0
+
+        self.maxMoveSpeed = 5.0
+        self.moveSpeedInc = 6
+        self.moveSpeedDecay = 5
 
         gun_frames = [f"shotgun_frame{i}" for i in range(5)]
 
@@ -43,7 +50,9 @@ class PlayerController:
     def MovePlayer(self, dt):
         """Move the player based on input and delta time. Returns false if movement was disabled, otherwise returns true."""
         if self.can_move == False:
+            self.moveSpeedForward = max(0, min(self.moveSpeedForward - self.moveSpeedInc, self.maxMoveSpeed))
             return False
+        
         
         keys = pygame.key.get_pressed()
 
@@ -55,23 +64,37 @@ class PlayerController:
 
         camera.forward_vector = (forward_x, forward_z) # type: ignore
 
-        print(camera.x, camera.y,camera.z)
         # Right Vector (Strafe)
         right_x = math.cos(angle)
         right_z = math.sin(angle)
         
-        if keys[pygame.K_w]:
-            camera.x += forward_x * self.moveSpeed * dt
-            camera.z += forward_z * self.moveSpeed * dt
-        if keys[pygame.K_s]:
-            camera.x -= forward_x * self.moveSpeed * dt
-            camera.z -= forward_z * self.moveSpeed * dt
-        if keys[pygame.K_a]:
-            camera.x -= right_x * self.moveSpeed * dt
-            camera.z -= right_z * self.moveSpeed * dt
-        if keys[pygame.K_d]:
-            camera.x += right_x * self.moveSpeed * dt
-            camera.z += right_z * self.moveSpeed * dt
+        accel = self.moveSpeedInc * dt
+        friction = self.moveSpeedDecay * dt
+        if keys[pygame.K_w]: self.moveSpeedForward += accel
+        if keys[pygame.K_s]: self.moveSpeedForward -= accel
+
+        if (keys[pygame.K_s] or keys[pygame.K_w]) == False: 
+            if self.moveSpeedForward > 0:
+                self.moveSpeedForward = max(0, self.moveSpeedForward - friction)
+            elif self.moveSpeedForward < 0:
+                self.moveSpeedForward = min(0, self.moveSpeedForward + friction)
+
+
+        if keys[pygame.K_d]: self.moveSpeedSideways += accel
+        if keys[pygame.K_a]: self.moveSpeedSideways -= accel
+
+        if (keys[pygame.K_d] or keys[pygame.K_a]) == False:
+            if self.moveSpeedSideways > 0:
+                self.moveSpeedSideways = max(0, self.moveSpeedSideways - friction)
+            elif self.moveSpeedSideways < 0:
+                self.moveSpeedSideways = min(0, self.moveSpeedSideways + friction)
+
+
+        self.moveSpeedForward = max(-self.maxMoveSpeed, min(self.moveSpeedForward, self.maxMoveSpeed))
+        self.moveSpeedSideways = max(-self.maxMoveSpeed, min(self.moveSpeedSideways, self.maxMoveSpeed))
+
+        camera.x += (forward_x * self.moveSpeedForward + right_x * self.moveSpeedSideways) * dt
+        camera.z += (forward_z * self.moveSpeedForward + right_z * self.moveSpeedSideways) * dt
 
 
 playerController = PlayerController()
@@ -143,8 +166,7 @@ class InputManager:
         if camera.rotationX < -90: camera.rotationX = -90
         
 
-        if keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]:
-            playerController.MovePlayer(dt)
+        playerController.MovePlayer(dt)
 
 
         for event in pygame.event.get():
