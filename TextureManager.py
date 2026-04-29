@@ -39,20 +39,23 @@ class Textures:
         glBindTexture(GL_TEXTURE_2D, 0)
         return texture_id
 
-    def PreloadTextures(self):
-        for i in range(len(self.textures)):
-            self.load_texture(list(self.textures.values())[i])
 
     def AddPreloadedTexture(self, path, alias):
         self.textures[alias] = self.load_texture(path)
 
     def GetTexture(self, alias):
+        if alias not in self.textures:
+            print("ALERT: TEXTURE {alias} NOT REGISTERED")
+            exit(-1)
         return self.textures[alias]
 
     def PreloadTextures(self):
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "WallTemp.png"), "Wall")
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "hud.png"), "UI_Main")
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "RedSkyWRock.png"), "Red_Wall")
+
+        for i in range(8):
+            self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Weapons", "Shotgun", f"shotgun_frame{i}.png"), f"shotgun_frame{i}")
 
 
 

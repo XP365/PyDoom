@@ -203,6 +203,10 @@ class Renderer:
         glEnable(GL_TEXTURE_2D)
         glViewport(0, 0, self.WINDOW_SIZE[0], self.WINDOW_SIZE[1])
 
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+
         # setup camera and initial position
         set_perspective(45, self.WINDOW_SIZE[0] / self.WINDOW_SIZE[1], 0.1, 1000)
         glTranslatef(0.0, 0.0, 0.0)
