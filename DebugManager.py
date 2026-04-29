@@ -33,7 +33,7 @@ class DebugManager:
         #Draw debug visualizations (player and hitboxes).
         if not self.debug_enabled:
             return
-        
+
         glPushMatrix()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         glDisable(GL_TEXTURE_2D)

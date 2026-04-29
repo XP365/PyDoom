@@ -49,7 +49,7 @@ class PlayerController:
         forward_x = math.sin(angle)
         forward_z = -math.cos(angle)
 
-        camera.forward_vector = (forward_x, forward_z)
+        camera.forward_vector = (forward_x, forward_z) # type: ignore
 
         print(camera.x, camera.y,camera.z)
         # Right Vector (Strafe)
