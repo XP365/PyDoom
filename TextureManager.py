@@ -39,9 +39,6 @@ class Textures:
         glBindTexture(GL_TEXTURE_2D, 0)
         return texture_id
 
-    def PreloadTextures(self):
-        for i in range(len(self.textures)):
-            self.load_texture(list(self.textures.values())[i])
 
     def AddPreloadedTexture(self, path, alias):
         self.textures[alias] = self.load_texture(path)
