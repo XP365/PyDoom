@@ -19,12 +19,16 @@ class PlayerController:
         self.can_shoot = True
         self.moveSpeed = 5.0
 
+        gun_frames = [f"shotgun_frame{i}" for i in range(5)]
+
+
     def SetupPlayer(self):
         #Setup UI
         ui_tex = textures.GetTexture("UI_Main")
 
         self.MainUI = create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
         self.Gun = create_ui_rect((-0.5,-0.5,0), (0.5,0.5,0), ui_tex, uv_mode="stretch", tile_u=8.0, tile_v=8.0)
+        self.GunFrame = 0
 
 
     def ShootWeapon(self):
