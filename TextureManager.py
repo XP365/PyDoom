@@ -53,6 +53,8 @@ class Textures:
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "WallTemp.png"), "Wall")
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "hud.png"), "UI_Main")
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "RedSkyWRock.png"), "Red_Wall")
+        self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Doomhead.png"), "Doomhead")
+        
 
         for i in range(8):
             self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Weapons", "Shotgun", f"shotgun_frame{i}.png"), f"shotgun_frame{i}")

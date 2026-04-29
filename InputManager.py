@@ -33,10 +33,13 @@ class PlayerController:
         #Setup UI
         ui_tex = textures.GetTexture("UI_Main")
         gun_tex = textures.GetTexture("shotgun_frame0")
+        face_tex = textures.GetTexture("Doomhead")
 
         self.MainUI = create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch")
         self.Gun = create_ui_rect((-0.7,-0.6,0), (0.3,0.4,0), gun_tex, uv_mode="stretch")
         self.GunFrame = 0
+        self.Face = create_ui_rect((-0.1,-0.1,0), (0.0,0.1,0), face_tex, uv_mode="stretch")
+        self.FaceFrame = 0
 
 
     def ShootWeapon(self):
