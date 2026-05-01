@@ -9,10 +9,11 @@ from pygame.locals import *
 from InputManager import inputManager, playerController
 from MusicManager import musicManager
 from ObjectManager import *
-from Time import *
+from DoomTime import *
 from Renderer import renderer, choose_video_driver
 from TextureManager import *
 from PhysicsManager import *
+from NetworkManager import *
 from Camera import *
 from LevelManager import *
 from OpenGL.GL import *
@@ -46,7 +47,7 @@ def main() -> None:
         glEnable(GL_MULTISAMPLE)
 
     #msc setup
-    time.initTime(renderer.FRAMERATE_CAP)
+    doomTime.initTime(renderer.FRAMERATE_CAP)
 
     Start()
 

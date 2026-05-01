@@ -8,10 +8,9 @@ from pygame import QUIT
 
 from Camera import camera
 from InputManager import inputManager
-from Time import time
+from DoomTime import doomTime
 from ObjectManager import objectManager, Wall, Floor
 from DebugManager import debugManager
-
 
 def choose_video_driver() -> None:
     if os.environ.get("SDL_VIDEODRIVER"):
@@ -240,8 +239,8 @@ class Renderer:
         inputManager.init(self.WINDOW_SIZE)
 
     def stepRenderer(self):
-        time.updateDeltaTime()
-        dt = time.getDeltaTime()
+        doomTime.updateDeltaTime()
+        dt = doomTime.getDeltaTime()
 
         # Check if the user Xed out of the window
         for event in pygame.event.get([pygame.QUIT, pygame.KEYDOWN]):
@@ -275,7 +274,7 @@ class Renderer:
         debugManager.draw_debug((camera.x, camera.z))
 
         # draw world-space objects
-        draw_object(objectManager.objects)
+        draw_object(list(objectManager.objects))
         
         # Draw debug visualizations
         
@@ -287,7 +286,7 @@ class Renderer:
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
         set_ortho_ndc()
-        draw_object(objectManager.uiObjects)
+        draw_object(list(objectManager.uiObjects))
         if cull_enabled:
             glEnable(GL_CULL_FACE)
         if depth_enabled:

@@ -58,6 +58,8 @@ class Textures:
 
         for i in range(8):
             self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Weapons", "Shotgun", f"shotgun_frame{i}.png"), f"shotgun_frame{i}")
+        for i in range(2):
+            self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Weapons", "Shotgun", f"shotgun_fireframe{i}.png"), f"shotgun_fireframe{i}")
 
 
 

@@ -1,12 +1,16 @@
 import sys
 import math
 import pygame
+import threading
+import time
 from Camera import camera
-from Time import time
+from DoomTime import doomTime
 from MusicManager import musicManager
 from LevelManager import levelManager
 from ObjectManager import *
 from TextureManager import textures
+from NetworkManager import *
+
 
 # Adjust these to your liking
 mouse_sensitivity = 0.15
@@ -22,9 +26,11 @@ class PlayerController:
         self.moveSpeedForward = 0
         self.moveSpeedSideways = 0
 
-        self.maxMoveSpeed = 5.0
-        self.moveSpeedInc = 6
-        self.moveSpeedDecay = 5
+        self.maxMoveSpeed = 7
+        self.moveSpeedInc = 8
+        self.moveSpeedDecay = 7
+
+        self.lock = threading.Lock()
 
         gun_frames = [f"shotgun_frame{i}" for i in range(5)]
 
@@ -36,20 +42,66 @@ class PlayerController:
         face_tex = textures.GetTexture("Doomhead")
 
         self.MainUI = create_ui_rect((-1,-1,0), (1,-0.6,0), ui_tex, uv_mode="stretch")
+
         self.Gun = create_ui_rect((-0.7,-0.6,0), (0.3,0.4,0), gun_tex, uv_mode="stretch")
         self.GunFrame = 0
-        self.Face = create_ui_rect((-0.1,-0.1,0), (0.0,0.1,0), face_tex, uv_mode="stretch")
+
+
+        self.Face = create_ui_rect((-0.03,-0.98,0), (-0.19,-0.64,0), face_tex, uv_mode="stretch")
         self.FaceFrame = 0
 
+    def ToggleCanShoot(self):
+        with self.lock:
+            self.can_shoot = not self.can_shoot
+
+    def RemoveUiElement(self, obj):
+        with self.lock:
+            if obj in objectManager.uiObjects:
+                objectManager.uiObjects.remove(obj)
+            else: 
+                print(f"{obj} not found in the following list: {objectManager.uiObjects}")
+    
+    def ShotgunAnimation(self):
+        time.sleep(0.5)
+        while True:
+            self.GunFrame = Wraparound(self.GunFrame + 1, 0, 2)
+
+            self.Gun.texture = textures.GetTexture(f"shotgun_frame{self.GunFrame}")
+            if self.GunFrame != 0:
+                time.sleep(0.3)
+                continue
+            else:
+                return
+        #Wraparound
 
     def ShootWeapon(self):
         """Handle shooting logic, including raycasting and hit detection. Returns false if shooting was disabled, otherwise returns the result of the raycast (hit object or None)."""
         if self.can_shoot == False:
             return False
-        
-        # Implement shooting logic here
+
+        self.can_shoot = False
+        musicManager.PlaySound("Shotgun Sound")
+
+        #test
+        SendPacket(sock, "I shot") 
+
+        fire_tex = textures.GetTexture("shotgun_fireframe0")
+        self.GunFire = create_ui_rect((-0.022,-0.22,0), (0.168,0.05,0), fire_tex, uv_mode="stretch")
+        self.GunFireFrame = 0
+
+        #run shotgun animation on another thread
+        thread = threading.Thread(target= self.ShotgunAnimation)
+        thread.start()
+
+        timer = threading.Timer(0.5, self.RemoveUiElement, args=(self.GunFire,))
+        timer.start()
+        timer = threading.Timer(1.0, self.ToggleCanShoot)
+        timer.start()
+
+
         hitObject = physicsManager.Raycast((camera.camera_pos_2d[0] + 1, camera.camera_pos_2d[1] + 1), camera.forward_vector)
         return hitObject
+    
     
     def MovePlayer(self, dt):
         """Move the player based on input and delta time. Returns false if movement was disabled, otherwise returns true."""
@@ -149,7 +201,7 @@ class InputManager:
         return is_currently_pressed and not was_pressed_last_frame
 
     def pollInput(self):
-        dt = time.getDeltaTime()
+        dt = doomTime.getDeltaTime()
         self._keys_down_prev = self._keys_down
         keys = pygame.key.get_pressed()
         self._keys_down = keys
@@ -181,7 +233,7 @@ class InputManager:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == pygame.BUTTON_LEFT:
-                    musicManager.PlaySound("Shotgun Sound")
+                    playerController.ShootWeapon()
 
                 if event.button == pygame.BUTTON_RIGHT:
                     levelManager.reload_level()
@@ -194,3 +246,12 @@ class InputManager:
 
 
 inputManager = InputManager()
+
+
+def Wraparound(value, minval, maxval) -> int:
+    if value > maxval:
+        return minval
+    elif value < maxval:
+        return maxval
+    else:
+        return value

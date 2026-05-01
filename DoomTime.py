@@ -1,5 +1,5 @@
 import pygame
-class Time:
+class DoomTime:
     def __init__(self):
         self.dt = 0
         self.FRAMERATE_CAP = None
@@ -19,4 +19,4 @@ class Time:
     def getDeltaTime(self):
         return self.dt
 
-time = Time()
+doomTime = DoomTime()
