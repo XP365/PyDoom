@@ -106,7 +106,7 @@ class PhysicsManager:
             forward_z = forwardVector[1] * total_distance
 
 
-            # 1. Define corners relative to local center (0,0)
+            #Define corners relative to local center (0,0)
             w2 = colliderWidth / 2
             h2 = colliderHeight / 2
             corners = [
@@ -116,14 +116,14 @@ class PhysicsManager:
                 Vector(-w2, h2)
             ]
 
-            # 2. Calculate center
+            #Calculate center
             center_x = x + forward_x
             center_y = z + forward_z
             rotation_angle = atan2(forwardVector[1], forwardVector[0])
             cos_a = cos(rotation_angle)
             sin_a = sin(rotation_angle)
 
-            # 3. Rotate and Translate
+            #Rotate and Translate
             rotated_corners = []
             for p in corners:
                 # Rotate
@@ -132,7 +132,7 @@ class PhysicsManager:
                 # Translate
                 rotated_corners.append(Vector(rx + center_x, ry + center_y))
 
-            # 4. Create Poly with new rotated points
+            #Create Poly with new rotated points
             raycastCollider = Poly(Vector(0 - 1, 0 - 1), rotated_corners)
 
 

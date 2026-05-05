@@ -36,6 +36,7 @@ def draw_textured_quad(
     u_offset: float = 0.0,
     v_offset: float = 0.0,
     double_sided: bool = False,
+    rotation = (0,0,0)
 ) -> None:
     if texture_id is None:
         raise RuntimeError(
@@ -82,6 +83,21 @@ def draw_textured_quad(
     if double_sided and was_cull_enabled:
         glDisable(GL_CULL_FACE)
 
+
+    cx = (topLeftPos[0] + bottomRightPos[0]) / 2
+    cy = (topLeftPos[1] + bottomRightPos[1]) / 2
+    cz = (topLeftPos[2] + bottomRightPos[2]) / 2
+
+    glPushMatrix()
+    
+    # Translate to center, rotate, then translate back
+    glTranslatef(cx, cy, cz)
+    glRotatef(rotation[0], 1.0, 0.0, 0.0) # Rotate around X
+    glRotatef(rotation[1], 0.0, 1.0, 0.0) # Rotate around Y
+    glRotatef(rotation[2], 0.0, 0.0, 1.0) # Rotate around Z
+    glTranslatef(-cx, -cy, -cz)
+
+
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glBegin(GL_QUADS)
 
@@ -91,6 +107,8 @@ def draw_textured_quad(
 
     glEnd()
     glBindTexture(GL_TEXTURE_2D, 0)
+
+    glPopMatrix()
 
     if double_sided and was_cull_enabled:
         glEnable(GL_CULL_FACE)
@@ -308,6 +326,7 @@ def draw_object(object_array):
                 u_offset=getattr(current_object, "u_offset", 0.0),
                 v_offset=getattr(current_object, "v_offset", 0.0),
                 double_sided=getattr(current_object, "double_sided", False),
+                rotation=getattr(current_object, "rotation", (0,0,0))
             )
         elif isinstance(current_object, Floor):
             draw_floor(

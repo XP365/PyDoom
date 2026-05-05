@@ -3,8 +3,10 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
 
+
 import pygame
 from pygame.locals import *
+from time import time
 
 from InputManager import inputManager, playerController
 from MusicManager import musicManager
@@ -69,6 +71,7 @@ def main() -> None:
 
 
 #Start of game logic behavior
+
 def Start():
     textures.PreloadTextures()
     musicManager.PreloadMusic()
@@ -82,7 +85,7 @@ def Start():
     levelManager.load_level("Level1")
 
 def Update():
-    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},")
+    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},{camera.rotationX}, {camera.rotationZ},")
 
 
 

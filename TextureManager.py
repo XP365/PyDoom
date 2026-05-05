@@ -45,7 +45,7 @@ class Textures:
 
     def GetTexture(self, alias):
         if alias not in self.textures:
-            print("ALERT: TEXTURE {alias} NOT REGISTERED")
+            print(f"ALERT: TEXTURE {alias} NOT REGISTERED")
             exit(-1)
         return self.textures[alias]
 

@@ -19,6 +19,7 @@ class Wall:
         u_offset: float = 0.0,
         v_offset: float = 0.0,
         double_sided: bool = False,
+        rotation: tuple = (0, 0, 0)
     ):
         self.top_left = top_left
         self.bottom_right = bottom_right
@@ -31,6 +32,8 @@ class Wall:
 
         self.top_right = (bottom_right[0], top_left[1], top_left[2])
         self.bottom_left = (top_left[0], bottom_right[1], top_left[2])
+
+        self.rotation = rotation
 
 class Floor:
     def __init__(
@@ -66,6 +69,7 @@ def create_wall(
     v_offset: float = 0.0,
     collider_thickness: float = 0.5,
     double_sided: bool = False,
+    rotation: tuple = (0, 0, 0)
 ) -> Wall:
     wall = Wall(
         pos,
@@ -77,6 +81,7 @@ def create_wall(
         u_offset=u_offset,
         v_offset=v_offset,
         double_sided=double_sided,
+        rotation=rotation
     )
 
     upper_pos = wall.top_left[1]

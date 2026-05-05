@@ -3,7 +3,14 @@ import threading
 from ObjectManager import *
 from TextureManager import *
 
+from collision import Vector
+from numpy import atan2
+
+
+PacketSize = 5
+
 enemyPlayer = create_wall((0,0,0), (1,1,0), -1)
+
 
 def SendPacket(sock, data):
     if sock == None:
@@ -17,7 +24,7 @@ def HandlePacket(dataString: str):
     dataSplitString = dataString.split(",")
     dataInt = []
 
-    for i in range(3):
+    for i in range(PacketSize):
             try:
                 dataInt.append(float(dataSplitString[i]))
             except ValueError:
@@ -25,9 +32,15 @@ def HandlePacket(dataString: str):
                 return
         
 
+    EnemyWidth = 5
+    EnemyHeight = 5
+    x = dataInt[0]
+    z = dataInt[2]
+    enemyPlayer.top_left = (x, 0, z)
+    enemyPlayer.bottom_right = (x + EnemyWidth, -dataInt[1] + EnemyHeight, z)
+    enemyPlayer.rotation = (0, dataInt[4], 0)
 
-    enemyPlayer.top_left = (dataInt[0], -dataInt[1], dataInt[2])
-    enemyPlayer.bottom_right = (dataInt[0] + 1, -dataInt[1] + 1, dataInt[2])
+    
 
 def receive_messages(sock):
     while True:
@@ -35,7 +48,7 @@ def receive_messages(sock):
             data = sock.recv(1024).decode('utf-8')
             if not data:
                 break
-            # Just printing the raw data for clarity
+
             thread = threading.Thread(target=HandlePacket, args=(data,), daemon=True)
             thread.start()
         except:
@@ -49,15 +62,15 @@ def start_chat():
     enemyPlayer.texture = textures.GetTexture("Test")
 
     
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        sock.connect(('127.0.0.1', 5050))
-        active_conn = sock
+        _sock.connect(('127.0.0.1', 5050))
+        active_conn = _sock
     except:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind(('127.0.0.1', 5050))
-        sock.listen(1)
-        conn, addr = sock.accept()
+        _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        _sock.bind(('127.0.0.1', 5050))
+        _sock.listen(1)
+        conn, addr = _sock.accept()
         active_conn = conn # Use the connection, not the listener
         
 
