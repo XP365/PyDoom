@@ -14,6 +14,7 @@ from Renderer import renderer, choose_video_driver
 from TextureManager import *
 from PhysicsManager import *
 from NetworkManager import *
+import NetworkManager
 from Camera import *
 from LevelManager import *
 from OpenGL.GL import *
@@ -72,6 +73,8 @@ def Start():
     textures.PreloadTextures()
     musicManager.PreloadMusic()
 
+    NetworkManager.sock = start_chat()
+
     musicManager.PlayMusic("Main Theme")
 
     playerController.SetupPlayer()
@@ -79,7 +82,7 @@ def Start():
     levelManager.load_level("Level1")
 
 def Update():
-    pass
+    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},")
 
 
 

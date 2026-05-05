@@ -82,9 +82,6 @@ class PlayerController:
         self.can_shoot = False
         musicManager.PlaySound("Shotgun Sound")
 
-        #test
-        SendPacket(sock, "I shot") 
-
         fire_tex = textures.GetTexture("shotgun_fireframe0")
         self.GunFire = create_ui_rect((-0.022,-0.22,0), (0.168,0.05,0), fire_tex, uv_mode="stretch")
         self.GunFireFrame = 0
