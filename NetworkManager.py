@@ -6,6 +6,8 @@ from TextureManager import *
 enemyPlayer = create_wall((0,0,0), (1,1,0), -1)
 
 def SendPacket(sock, data):
+    if sock == None:
+        return
     try:
         sock.send(data.encode('utf-8'))
     except:
@@ -41,8 +43,9 @@ def receive_messages(sock):
             break
 
         
-
+sock = None
 def start_chat():
+    global sock
     enemyPlayer.texture = textures.GetTexture("Test")
 
     
@@ -61,6 +64,6 @@ def start_chat():
     thread = threading.Thread(target=receive_messages, args=(active_conn,), daemon=True)
     thread.start()
 
-    return active_conn
+    sock = active_conn
 
-sock = None
+

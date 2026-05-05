@@ -73,7 +73,7 @@ def Start():
     textures.PreloadTextures()
     musicManager.PreloadMusic()
 
-    NetworkManager.sock = start_chat()
+    threading.Thread(target=start_chat, daemon=True).start()
 
     musicManager.PlayMusic("Main Theme")
 
