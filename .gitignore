@@ -1,3 +1,5 @@
 /__pycache__
 /Levels/__pycache__
 /lib/
+/lib/OpenGL/__pycache__
+*.pyc

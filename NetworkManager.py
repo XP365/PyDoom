@@ -65,11 +65,11 @@ def start_chat():
     
     _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        _sock.connect(('127.0.0.1', 5050))
+        _sock.connect(('172.20.136.21', 5535))
         active_conn = _sock
     except:
         _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _sock.bind(('127.0.0.1', 5050))
+        _sock.bind(('0.0.0.0', 5535))
         _sock.listen(1)
         conn, addr = _sock.accept()
         active_conn = conn # Use the connection, not the listener
@@ -81,3 +81,16 @@ def start_chat():
     sock = active_conn
 
 
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Doesn't need to be reachable, just triggers OS to pick correct interface
+        s.connect(('8.8.8.8', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+print(get_local_ip())
