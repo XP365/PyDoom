@@ -9,7 +9,7 @@ from numpy import atan2
 
 PacketSize = 5
 
-enemyPlayer = create_wall((0,0,0), (1,1,0), -1)
+enemyPlayer = create_wall((0,0,0), (0,0,0), -1, uv_mode="stretch", double_sided=True)
 
 
 def SendPacket(sock, data):
@@ -32,13 +32,13 @@ def HandlePacket(dataString: str):
                 return
         
 
-    EnemyWidth = 5
-    EnemyHeight = 5
+    EnemyWidth = 2
+    EnemyHeight = 2.3
     x = dataInt[0]
     z = dataInt[2]
     enemyPlayer.top_left = (x, 0, z)
     enemyPlayer.bottom_right = (x + EnemyWidth, -dataInt[1] + EnemyHeight, z)
-    enemyPlayer.rotation = (0, dataInt[4], 0)
+    enemyPlayer.rotation = (0, -dataInt[4], 0)
 
     
 
@@ -59,7 +59,8 @@ def receive_messages(sock):
 sock = None
 def start_chat():
     global sock
-    enemyPlayer.texture = textures.GetTexture("Test")
+    global enemyPlayer
+    enemyPlayer.texture = textures.GetTexture("PlayerForward")
 
     
     _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

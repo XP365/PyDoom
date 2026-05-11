@@ -85,7 +85,7 @@ def Start():
     levelManager.load_level("Level1")
 
 def Update():
-    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},{camera.rotationX}, {camera.rotationZ},")
+    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},{camera.rotationX}, {camera.rotationY},")
 
 
 

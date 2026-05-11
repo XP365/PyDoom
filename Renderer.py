@@ -99,6 +99,8 @@ def draw_textured_quad(
 
 
     glBindTexture(GL_TEXTURE_2D, texture_id)
+
+
     glBegin(GL_QUADS)
 
     for index, vertex in enumerate(vertexes):
@@ -112,6 +114,7 @@ def draw_textured_quad(
 
     if double_sided and was_cull_enabled:
         glEnable(GL_CULL_FACE)
+
 
 def draw_floor(
     texture_id: int,
@@ -222,6 +225,9 @@ class Renderer:
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        glEnable(GL_ALPHA_TEST)
+        glAlphaFunc(GL_NOTEQUAL, 0.0)
 
 
         # setup camera and initial position
