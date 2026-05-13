@@ -62,24 +62,27 @@ def start_chat():
     global enemyPlayer
     enemyPlayer.texture = textures.GetTexture("PlayerForward")
 
-    
-    _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    _sock.connect(('127.20.128.1', 8080))
-    active_conn = _sock
-    print("test")
-"""    except:
+    try:
         _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _sock.bind(('0.0.0.0', 12345))
-        _sock.listen(1)
-        conn, addr = _sock.accept()
-        active_conn = conn # Use the connection, not the listener
+        _sock.connect(('172.20.128.1', 8081))
+        active_conn = _sock
+    except:
+        print("Unable to find sever, hosting instead.")
+        server_launcher = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Reuse address to prevent 'Address already in use' errors
+        server_launcher.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_launcher.bind(('0.0.0.0', 808))
+        server_launcher.listen(1)
+        
+        conn, addr = server_launcher.accept()
+        active_conn = conn
+        
         
 
     thread = threading.Thread(target=receive_messages, args=(active_conn,), daemon=True)
     thread.start()
 
     sock = active_conn
-"""
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
