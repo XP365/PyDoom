@@ -9,7 +9,7 @@ from numpy import atan2
 
 PacketSize = 5
 
-enemyPlayer = create_wall((0,0,0), (0,0,0), -1, uv_mode="stretch", double_sided=True)
+enemyPlayer = create_wall((0,0,0), (1,1,0), -1, uv_mode="stretch", double_sided=True)
 
 
 def SendPacket(sock, data):
@@ -64,12 +64,12 @@ def start_chat():
 
     
     _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        _sock.connect(('172.20.136.21', 5535))
-        active_conn = _sock
-    except:
+    _sock.connect(('127.20.128.1', 8080))
+    active_conn = _sock
+    print("test")
+"""    except:
         _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _sock.bind(('0.0.0.0', 5535))
+        _sock.bind(('0.0.0.0', 12345))
         _sock.listen(1)
         conn, addr = _sock.accept()
         active_conn = conn # Use the connection, not the listener
@@ -79,7 +79,7 @@ def start_chat():
     thread.start()
 
     sock = active_conn
-
+"""
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
