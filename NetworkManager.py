@@ -68,7 +68,7 @@ def start_chat(host_ip: Optional[str] = None, host_port: int = PORT):
 
     try:
         _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        target_ip = host_ip if host_ip is not None else '172.20.128.1'
+        target_ip = host_ip if host_ip is not None else '10.43.188.79'
         print(f"Attempting to connect to {target_ip}:{host_port}...")
         _sock.connect((target_ip, host_port))
         print("Connected as client.")
