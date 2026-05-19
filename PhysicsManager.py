@@ -92,7 +92,7 @@ class PhysicsManager:
         return slide_pos, True
     
     def Raycast(self, startPos : tuple, forwardVector : tuple):
-        colliderWidth = 0.1
+        colliderWidth = 0.05
         colliderHeight = 0.1
         incfactor = 1
 

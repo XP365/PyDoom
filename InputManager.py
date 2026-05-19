@@ -1,5 +1,7 @@
 import sys
 import math
+import NetworkManager
+import numpy as np
 import pygame
 import threading
 import time
@@ -21,6 +23,9 @@ class PlayerController:
         #Player Properties
         self.can_move = True
         self.can_shoot = True
+
+        self.HP = 100
+        self.Armor = 0
 
 
         self.moveSpeedForward = 0
@@ -49,6 +54,22 @@ class PlayerController:
 
         self.Face = create_ui_rect((-0.03,-0.98,0), (-0.19,-0.64,0), face_tex, uv_mode="stretch")
         self.FaceFrame = 0
+
+        number_position = (-0.725,-0.83,0)
+        number_width = 0.1
+        number_height = 0.2
+        number_offset = (0.1,0,0)
+
+        
+
+        self.Health = []
+        for i in range(3):
+            scalar = np.sign(i)
+            temp_number_offset = tuple(x * scalar for x in number_offset)
+
+            number_position = tuple(x + y for x, y in zip(number_position, temp_number_offset))
+            self.Health.append(create_ui_rect(number_position, (number_position[0] + number_width, number_position[1] + number_height, 0), textures.GetTexture(f"{i}"), uv_mode="stretch"))
+
 
     def ToggleCanShoot(self):
         with self.lock:
@@ -149,10 +170,40 @@ class PlayerController:
         camera.x += (forward_x * self.moveSpeedForward + right_x * self.moveSpeedSideways) * dt
         camera.z += (forward_z * self.moveSpeedForward + right_z * self.moveSpeedSideways) * dt
 
-        def UpdatePlayerInformation():
-            """ Handles things like gun sprites, and other things that need to be updated per frame"""
-            pass
-            #self.Gun.texture = 
+    def UpdatePlayerInformation(self):
+        digits = [int(d) for d in f"{self.HP:03d}"]
+        for i in range(3):
+            self.Health[i].texture = textures.GetTexture(f"{digits[i]}")
+
+    def Anounce(self, text, text_position=(-0.5, -0.5, 0), text_width_and_height=(0.1, 0.1, 0), lifetime_seconds=2.0, newline_spacing=0.1):
+        start_text_position = text_position
+        """Puts a doom text anouncement in the center of the screen for a short time. Used for things like "You got the shotgun!" or "Enemy Hit!"."""
+        text = text.lower()
+
+        true_i = 0
+        for i in range(len(text)):
+            char = text[i]
+
+            if char is "\n":
+                text_position = (start_text_position[0], text_position[1] - newline_spacing, text_position[2])
+                true_i = 0
+                continue
+                
+
+            char_tex = textures.GetTexture(char)
+
+            
+
+
+            char_pos = tuple(x + y for x, y in zip(text_position, (text_width_and_height[0] * true_i, 0, 0)))
+            text_inverse_pos = (char_pos[0] + text_width_and_height[0], char_pos[1] + text_width_and_height[1], char_pos[2] + text_width_and_height[2])
+            
+            char_obj = create_ui_rect(char_pos, text_inverse_pos, char_tex, uv_mode="stretch")
+            timer = threading.Timer(lifetime_seconds, self.RemoveUiElement, args=(char_obj,))
+            timer.start()
+
+            true_i += 1
+    
 
 
 playerController = PlayerController()
@@ -217,7 +268,7 @@ class InputManager:
         camera.rotationY += mouse_dx * mouse_sensitivity
 
         # Update vertical rotation (X-axis)
-        camera.rotationX += mouse_dy * mouse_sensitivity
+        #camera.rotationX += mouse_dy * mouse_sensitivity
 
         # Clamp vertical look so you can't flip upside down
         if camera.rotationX > 90: camera.rotationX = 90
@@ -226,20 +277,28 @@ class InputManager:
 
         playerController.MovePlayer(dt)
 
-
+        hitObject = None
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == pygame.BUTTON_LEFT:
-                    playerController.ShootWeapon()
+                    hitObject = playerController.ShootWeapon()
 
                 if event.button == pygame.BUTTON_RIGHT:
                     levelManager.reload_level()
 
+        if hitObject is not None:
+            if hitObject is enemyPlayer:
+                print("Enemy hit!")
+                NetworkManager.enemyHit = True
+            else:
+                print("Hit something else:", hitObject)
 
         # Fallback: keep the cursor centered if relative mode isn't available.
         if (not self._relative_ok) and (self._center is not None):
             pygame.mouse.set_pos(self._center)
             pygame.mouse.get_rel()  # Flush any warp-induced delta.
+
+        playerController.UpdatePlayerInformation()
 
 
 inputManager = InputManager()

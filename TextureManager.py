@@ -63,6 +63,18 @@ class Textures:
         for i in range(2):
             self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Weapons", "Shotgun", f"shotgun_fireframe{i}.png"), f"shotgun_fireframe{i}")
 
+        for i in range(10):
+            self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Characters", f"big_{i}.png"), f"{i}")
+        
+        for i in range(26):
+            self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Characters", f"big_{chr(ord('a') + i)}.png"), f"{chr(ord('a') + i)}")
+
+        #space character
+        self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Characters", f"_.png"), f" ")
+        self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Characters", f"Exclamation.png"), f"!")
+        self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Characters", f"Period.png"), f".")
+
+
 
 
 

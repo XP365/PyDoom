@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from PhysicsManager import physicsManager
+from collision import *
 import glm
 from math import sqrt
 
@@ -34,6 +35,7 @@ class Wall:
         self.bottom_left = (top_left[0], bottom_right[1], top_left[2])
 
         self.rotation = rotation
+        self.collider: Poly | None = None
 
 class Floor:
     def __init__(
@@ -118,7 +120,7 @@ def create_wall(
         dx = x2 - x1
         dz = z2 - z1
         seg_len = sqrt(dx * dx + dz * dz)
-        if seg_len == 0:
+        if seg_len <= 1e-6:
             return objectManager.addObject(wall)
 
         half_t = abs(collider_thickness) / 2.0
@@ -131,7 +133,8 @@ def create_wall(
         corner_br = (x2 - px * half_t, z2 - pz * half_t)
         corner_bl = (x1 - px * half_t, z1 - pz * half_t)
     
-    physicsManager.AddCollider(wall, corner_tl, corner_tr, corner_br, corner_bl)
+    wall.collider = physicsManager.AddCollider(wall, corner_tl, corner_tr, corner_br, corner_bl) # type: ignore
+
     return objectManager.addObject(wall)
 
 def create_floor(

@@ -84,8 +84,11 @@ def Start():
 
     levelManager.load_level("Level1")
 
+    playerController.Anounce("Welcome to\nPyDoom! Use WASD to movemouse to look around and left click to shoot.", lifetime_seconds=10)
+
 def Update():
-    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},{camera.rotationX}, {camera.rotationY},")
+    SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},{camera.rotationX}, {camera.rotationY}, {NetworkManager.enemyHit},")
+    NetworkManager.enemyHit = False
 
 
 

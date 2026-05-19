@@ -7,9 +7,10 @@ from collision import Vector
 from numpy import atan2
 
 
-PacketSize = 5
+PacketSize = 6
 
-enemyPlayer = create_wall((0,0,0), (1,1,0), -1, uv_mode="stretch", double_sided=True)
+enemyPlayer = create_wall((0,0,0), (0.01,0.01,0), -1, uv_mode="stretch", double_sided=True)
+enemyHit =  False
 
 
 def SendPacket(sock, data):
@@ -24,21 +25,47 @@ def HandlePacket(dataString: str):
     dataSplitString = dataString.split(",")
     dataInt = []
 
+    def skipPacket():
+        print(f"Skipping invalid packet: {dataSplitString[i]} With unsplit data: {dataString}")
+    
     for i in range(PacketSize):
             try:
                 dataInt.append(float(dataSplitString[i]))
             except ValueError:
-                print(f"Skipping invalid packet: {dataSplitString[i]} With unsplit data: {dataString}")
-                return
+                val = str(dataSplitString[i]).strip().lower()
         
-
-    EnemyWidth = 2
-    EnemyHeight = 2.3
+                if val in ['true', 't', '1']:
+                    dataInt.append(True)
+                elif val in ['false', 'f', '0']:
+                    dataInt.append(False)
+                else:
+                    print("Non-boolean string where boolean expected:", dataSplitString[i])
+                    skipPacket()
+                    return
+                
+    EnemyWidth = 1.5
+    EnemyHeight = 1.5
+    EnemyDepth = 1.5
+    half_width = EnemyWidth / 2.0
+    half_depth = EnemyDepth / 5.0
     x = dataInt[0]
     z = dataInt[2]
-    enemyPlayer.top_left = (x, 0, z)
-    enemyPlayer.bottom_right = (x + EnemyWidth, -dataInt[1] + EnemyHeight, z)
-    enemyPlayer.rotation = (0, -dataInt[4], 0)
+    enemyPlayer.top_left = (x - half_width, 0, z - half_depth)
+    enemyPlayer.bottom_right = (x + half_width, -dataInt[1] + EnemyHeight, z + half_depth)
+    enemyPlayer.rotation = (0, dataInt[4] - 180, 0)
+    #Update hitbox position and rotation based on received data, but keep in mind the coliders are 2d on the floor
+    if enemyPlayer.collider is not None:
+        enemyPlayer.collider.set_points([
+            Vector(enemyPlayer.top_left[0], enemyPlayer.top_left[2]),
+            Vector(enemyPlayer.bottom_right[0], enemyPlayer.top_left[2]),
+            Vector(enemyPlayer.bottom_right[0], enemyPlayer.bottom_right[2]),
+            Vector(enemyPlayer.top_left[0], enemyPlayer.bottom_right[2])
+        ])
+
+    wasHit = dataInt[5]
+    if wasHit:
+        wasHit = False
+        print("I was hit!")
 
     
 
@@ -64,14 +91,14 @@ def start_chat():
 
     try:
         _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _sock.connect(('172.20.128.1', 8081))
+        _sock.connect(('127.0.0.1', 8081))
         active_conn = _sock
     except:
         print("Unable to find sever, hosting instead.")
         server_launcher = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Reuse address to prevent 'Address already in use' errors
         server_launcher.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_launcher.bind(('0.0.0.0', 808))
+        server_launcher.bind(('0.0.0.0', 8081))
         server_launcher.listen(1)
         
         conn, addr = server_launcher.accept()
@@ -83,17 +110,3 @@ def start_chat():
     thread.start()
 
     sock = active_conn
-
-def get_local_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        # Doesn't need to be reachable, just triggers OS to pick correct interface
-        s.connect(('8.8.8.8', 1))
-        IP = s.getsockname()[0]
-    except Exception:
-        IP = '127.0.0.1'
-    finally:
-        s.close()
-    return IP
-
-print(get_local_ip())
