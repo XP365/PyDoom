@@ -35,7 +35,7 @@ def draw_textured_quad(
     tile_v: float = 5.0,     # repeats per world unit along V
     u_offset: float = 0.0,
     v_offset: float = 0.0,
-    double_sided: bool = False,
+    double_sided: bool = True,
     rotation = (0,0,0)
 ) -> None:
     if texture_id is None:
@@ -331,7 +331,7 @@ def draw_object(object_array):
                 tile_v=getattr(current_object, "tile_v", 5.0),
                 u_offset=getattr(current_object, "u_offset", 0.0),
                 v_offset=getattr(current_object, "v_offset", 0.0),
-                double_sided=getattr(current_object, "double_sided", False),
+                double_sided=getattr(current_object, "double_sided", True),
                 rotation=getattr(current_object, "rotation", (0,0,0))
             )
         elif isinstance(current_object, Floor):
