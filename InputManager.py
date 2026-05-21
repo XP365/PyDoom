@@ -170,10 +170,6 @@ class PlayerController:
         camera.x += (forward_x * self.moveSpeedForward + right_x * self.moveSpeedSideways) * dt
         camera.z += (forward_z * self.moveSpeedForward + right_z * self.moveSpeedSideways) * dt
 
-    def UpdatePlayerInformation(self):
-        digits = [int(d) for d in f"{self.HP:03d}"]
-        for i in range(3):
-            self.Health[i].texture = textures.GetTexture(f"{digits[i]}")
 
     def Anounce(self, text, text_position=(-0.5, -0.5, 0), text_width_and_height=(0.1, 0.1, 0), lifetime_seconds=2.0, newline_spacing=0.1):
         start_text_position = text_position
@@ -203,6 +199,24 @@ class PlayerController:
             timer.start()
 
             true_i += 1
+
+    def UpdatePlayerInformation(self):
+        if NetworkManager.wasHit == True:
+            NetworkManager.wasHit = False
+            self.HP -= 10
+
+        if self.HP <= 0 and self.can_move == True and self.can_shoot == True:
+            self.HP = 0
+            self.can_move = False
+            self.can_shoot = False
+            self.Anounce("You Died!", lifetime_seconds=1000, text_position=(-0.75, 0, 0))
+            return
+
+        digits = [int(d) for d in f"{self.HP:03d}"]
+        for i in range(3):
+            self.Health[i].texture = textures.GetTexture(f"{digits[i]}")
+
+    
     
 
 

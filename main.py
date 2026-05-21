@@ -103,7 +103,7 @@ def Update():
 
     if hasAnounced == False:
         hasAnounced = True
-        playerController.Anounce("Enemy player has connected. begin!")
+        playerController.Anounce("Enemy player has connected.\nbegin!", lifetime_seconds=3, text_position=(-1, -0.5, 0))
         if NetworkManager.isServer:
             camera.x = -18.5
             camera.z = -12.5

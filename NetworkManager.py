@@ -14,6 +14,7 @@ enemyPlayerBack = create_wall((999,999,999), (999.01,999.01,999), -1, uv_mode="s
 enemyHit =  False
 isServer = False
 clientConnected = False
+wasHit = False
 
 def SendPacket(sock, data):
     if sock == None:
@@ -24,7 +25,8 @@ def SendPacket(sock, data):
         print("Failed to send message.")
 
 def HandlePacket(dataString: str):
-    
+    global wasHit
+
     dataSplitString = dataString.split(",")
     dataInt = []
 
@@ -71,7 +73,6 @@ def HandlePacket(dataString: str):
 
     wasHit = dataInt[5]
     if wasHit:
-        wasHit = False
         print("I was hit!")
 
     
