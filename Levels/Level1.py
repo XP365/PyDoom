@@ -2,42 +2,127 @@ from ObjectManager import *
 from TextureManager import textures
 
 RedWall = textures.GetTexture("Red_Wall")
-WallTex = textures.GetTexture("Wall")
+Wall = textures.GetTexture("Wall")
 ui_tex = textures.GetTexture("UI_Main")
+Brick1 = textures.GetTexture("Brick1")
+Brick2 = textures.GetTexture("Brick2")
+Floor = textures.GetTexture("Floor")
+
 
 def CreateObjects():
-    """create_wall((0, 0, 0), (7, 5, 0), WallTex, tile_u=0.2, tile_v=0.2)
-    create_wall((5, 0, 5), (5, 5, 10), WallTex, tile_u=0.2, tile_v=0.2)"""
-    create_wall((-20, 0, -20), (20, 5, -20), WallTex, tile_u=0.2, tile_v=0.2) #border
-    create_wall((20, 0, -20), (20, 5, 20), WallTex, tile_u=0.2, tile_v=0.2)   #border
-    create_wall((20, 0, 20), (-20, 5, 20), WallTex, tile_u=0.2, tile_v=0.2)   #border
-    create_wall((-20, 0, 20), (-20, 5, -20), RedWall, tile_u=0.2, tile_v=0.2) #border
-    create_wall((15, 0, 10), (15, 5, 15), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((15, 0, 10), (10, 5, 10), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((10, 0, 15), (10, 5, 10), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((10, 0, 15), (5, 5, 15), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((5, 0, 10), (5, 5, 15), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((5, 0, 10), (0, 5, 10), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((0, 0, 15), (0, 5, 10), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((0, 0, 15), (-5, 5, 15), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((-5, 0, 10), (-5, 5, 15), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((-5, 0, 10), (-10, 5, 10), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((-10, 0, 5), (-10, 5, 10), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((-10, 0, 5), (-15, 5, 5), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((-15, 0, 0), (-15, 5, 5), ui_tex, tile_u=0.2, tile_v=0.2)
-    create_wall((-15, 0, 0), (-20, 5, 0), ui_tex, tile_u=0.2, tile_v=0.2)
+
+    create_wall((-20, 0, -20), (20, 5, -20), Brick2, tile_u=0.2, tile_v=0.2) #border
+    create_wall((20, 0, -20), (20, 5, 20), Brick2, tile_u=0.2, tile_v=0.2)   #border
+    create_wall((20, 0, 20), (-20, 5, 20), Brick2, tile_u=0.2, tile_v=0.2)   #border
+    create_wall((-20, 0, 20), (-20, 5, -20), Brick2, tile_u=0.2, tile_v=0.2) #border
+    create_wall((15, 0, 10), (15, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 10), (10, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (10, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, 10), (5, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, 15), (0, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, 15), (-5, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-5, 0, 10), (-5, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 15), (-10, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-15, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-20, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-20, 0, -15), (-15, 5, -15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -10), (-10, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-10, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-5, 5, -15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-5, 0, -10), (0, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, -15), (0, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, -15), (5, 5, -15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, -10), (10, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -15), (10, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (20, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -20), (-15, 5, -15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-15, 5, -15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -10), (-15, 5, -5), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -5), (-15, 5, -5), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 0), (-10, 5, 0), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 5), (-15, 5, 5), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-10, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 15), (-15, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 20), (15, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (15, 5, 15), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (10, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 10), (10, 5, 10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 5), (15, 5, 5), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 5), (10, 5, 0), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 0), (10, 5, 0), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 0), (15, 5, -5), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -5), (15, 5, -5), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (10, 5, -10), Brick2, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (15, 5, -15), Brick2 , tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -15), (15, 5, -15), Brick2, tile_u=0.2, tile_v=0.2)
 
 
 
 
 
-
-
-
-
+    '''create_wall((20, 0, 15), (15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)             #all walls
+    create_wall((15, 0, 10), (15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 10), (10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (5, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, 10), (5, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, 10), (0, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, 15), (0, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, 15), (-5, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-5, 0, 10), (-5, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-5, 0, 10), (-10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 15), (-10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 15), (-15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-20, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-20, 0, -15), (-15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -10), (-15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -10), (-10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-5, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-5, 0, -10), (-5, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-5, 0, -10), (0, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, -15), (0, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((0, 0, -15), (5, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, -10), (5, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((5, 0, -10), (10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -15), (10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -15), (15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (20, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -20), (-15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -15), (-10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -10), (-10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, -10), (-15, 5, -5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -5), (-15, 5, -5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, -5), (-10, 5, 0), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 0), (-10, 5, 0), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 0), (-15, 5, 5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 5), (-15, 5, 5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 5), (-10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-15, 0, 10), (-15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 15), (-15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((-10, 0, 15), (-10, 5, 20), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 20), (15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (15, 5, 15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 15), (10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 10), (10, 5, 10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 10), (15, 5, 5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 5), (15, 5, 5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, 5), (10, 5, 0), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 0), (10, 5, 0), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, 0), (15, 5, -5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -5), (15, 5, -5), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -5), (10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (10, 5, -10), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((15, 0, -10), (15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -15), (15, 5, -15), Wall, tile_u=0.2, tile_v=0.2)
+    create_wall((10, 0, -15), (10, 5, -20), Wall, tile_u=0.2, tile_v=0.2)'''
 
 
     
     # floors
     floor_width = 20
-    create_floor((-floor_width, 0, -floor_width), (floor_width, 0, floor_width), WallTex, tile_u=0.2, tile_v=0.2)
+    create_floor((-floor_width, 0, -floor_width), (floor_width, 0, floor_width), Floor, tile_u=0.2, tile_v=0.2)
