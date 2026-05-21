@@ -9,9 +9,11 @@ from numpy import atan2
 
 PacketSize = 6
 
-enemyPlayer = create_wall((0,0,0), (0.01,0.01,0), -1, uv_mode="stretch", double_sided=True)
+enemyPlayer = create_wall((999,999,999), (999.01,999.01,999), -1, uv_mode="stretch")
+enemyPlayerBack = create_wall((999,999,999), (999.01,999.01,999), -1, uv_mode="stretch")
 enemyHit =  False
-
+isServer = False
+clientConnected = False
 
 def SendPacket(sock, data):
     if sock == None:
@@ -22,6 +24,7 @@ def SendPacket(sock, data):
         print("Failed to send message.")
 
 def HandlePacket(dataString: str):
+    
     dataSplitString = dataString.split(",")
     dataInt = []
 
@@ -62,6 +65,10 @@ def HandlePacket(dataString: str):
             Vector(enemyPlayer.top_left[0], enemyPlayer.bottom_right[2])
         ])
 
+    enemyPlayerBack.top_left = enemyPlayer.top_right
+    enemyPlayerBack.bottom_right = enemyPlayer.bottom_left
+    enemyPlayerBack.rotation = enemyPlayer.rotation
+
     wasHit = dataInt[5]
     if wasHit:
         wasHit = False
@@ -86,13 +93,17 @@ def receive_messages(sock):
 sock = None
 def start_chat():
     global sock
+    global isServer
     global enemyPlayer
+    global enemyPlayerBack
     enemyPlayer.texture = textures.GetTexture("PlayerForward")
+    enemyPlayerBack.texture = textures.GetTexture("PlayerBack")
 
     try:
         _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         _sock.connect(('127.0.0.1', 8081))
         active_conn = _sock
+        isServer = False
     except:
         print("Unable to find sever, hosting instead.")
         server_launcher = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,7 +113,9 @@ def start_chat():
         server_launcher.listen(1)
         
         conn, addr = server_launcher.accept()
+        clientConnected = True
         active_conn = conn
+        isServer = True
         
         
 

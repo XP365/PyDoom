@@ -3,7 +3,7 @@
 
 class Camera:
     def __init__(self):
-        CAMERA_OFFSET = (-2,-2,-2)
+        CAMERA_OFFSET = (-2.0,-2.0,-2.0)
         self.x = CAMERA_OFFSET[0]
         self.y = CAMERA_OFFSET[1]
         self.z = CAMERA_OFFSET[2]

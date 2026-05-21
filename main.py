@@ -1,12 +1,17 @@
 #add the local path to the library search dir
+import subprocess
 import sys
 import os
+import threading
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))
 
+subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
 
 import pygame
 from pygame.locals import *
 from time import time
+
+
 
 from InputManager import inputManager, playerController
 from MusicManager import musicManager
@@ -72,6 +77,7 @@ def main() -> None:
 
 #Start of game logic behavior
 
+hasAnounced = False
 def Start():
     textures.PreloadTextures()
     musicManager.PreloadMusic()
@@ -84,11 +90,28 @@ def Start():
 
     levelManager.load_level("Level1")
 
-    playerController.Anounce("Welcome to\nPyDoom! Use WASD to movemouse to look around and left click to shoot.", lifetime_seconds=10)
+    playerController.Anounce("Welcome to PyDoom!\nUse WASD to move\nmouse to look around and\nleft click to shoot.", lifetime_seconds=3, text_position=(-1, 0.5, 0))
 
 def Update():
+    global hasAnounced
+    
     SendPacket(NetworkManager.sock, f"{camera.x},{camera.y},{camera.z},{camera.rotationX}, {camera.rotationY}, {NetworkManager.enemyHit},")
     NetworkManager.enemyHit = False
+
+    if NetworkManager.sock is None:
+        return
+
+    if hasAnounced == False:
+        hasAnounced = True
+        playerController.Anounce("Enemy player has connected. begin!")
+        if NetworkManager.isServer:
+            camera.x = -18.5
+            camera.z = -12.5
+        else:
+            camera.x = 13.5
+            camera.z = 18.5
+                
+    
 
 
 
