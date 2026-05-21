@@ -7,7 +7,7 @@ ui_tex = textures.GetTexture("UI_Main")
 Brick1 = textures.GetTexture("Brick1")
 Brick2 = textures.GetTexture("Brick2")
 Floor = textures.GetTexture("Floor")
-
+Roof = textures.GetTexture("Roof")
 
 def CreateObjects():
 
@@ -125,4 +125,5 @@ def CreateObjects():
     
     # floors
     floor_width = 20
+    create_floor((-floor_width, 5, -floor_width), (floor_width, 5, floor_width), Floor, tile_u=0.2, tile_v=0.2)
     create_floor((-floor_width, 0, -floor_width), (floor_width, 0, floor_width), Floor, tile_u=0.2, tile_v=0.2)

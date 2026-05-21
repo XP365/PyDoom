@@ -60,7 +60,7 @@ class Textures:
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Brick2.png"), "Brick2")  
         self.AddPreloadedTexture(os.path.join("Assets", "Textures", "cloblefloor.png"), "Floor") 
         self.AddPreloadedTexture(os.path.join("Assets", "Textures","PlayerSprites", "PlayerBack.png"), "PlayerBack")
-
+        self.AddPreloadedTexture(os.path.join("Assets", "Textures", "celing.png"), "Roof") 
 
         for i in range(8):
             self.AddPreloadedTexture(os.path.join("Assets", "Textures", "Weapons", "Shotgun", f"shotgun_frame{i}.png"), f"shotgun_frame{i}")

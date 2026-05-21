@@ -24,6 +24,7 @@ class MusicManager:
 
     def PreloadMusic(self):
             self.AddPreloadedMusic(os.path.join("Assets", "Audio", "SFX", "shotgun.mp3"), "Shotgun Sound")
+            self.AddPreloadedMusic(os.path.join("Assets", "Audio", "SFX", "player-umf.mp3"), "Hurt")
             self.AddPreloadedMusic(os.path.join("Assets", "Audio", "Music", "MainTheme.mp3"), "Main Theme")
 
 
